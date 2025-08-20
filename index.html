@@ -1727,7 +1727,26 @@ body.dark input[type="date"]::-webkit-calendar-picker-indicator {
   box-shadow: 0 4px 10px rgba(0,0,0,0.1);
 }
 
-  </style>
+  
+
+/* === NAVBAR VISIBILITY RULES — canonical === */
+@media (min-width: 1024px) {
+  .header-nav-desktop { display: flex !important; }
+  .hamburger { display: none !important; }
+}
+@media (max-width: 1023px) {
+  .header-nav-desktop { display: none !important; }
+  .hamburger { display: flex !important; }
+}
+@media (max-width: 767px) {
+  .header-nav-desktop { display: none !important; }
+  .hamburger { display: flex !important; }
+}
+@media (max-width: 519px) {
+  .header-nav-desktop { display: none !important; }
+  .hamburger { display: flex !important; }
+}
+</style>
 </head>
 <body class="bg-gray-100 text-gray-800">
 
@@ -1813,6 +1832,7 @@ body.dark input[type="date"]::-webkit-calendar-picker-indicator {
       <i class="fas fa-heart"></i> <span>Wishlist</span>
       <span class="ml-auto bg-pink-500 text-white text-xs rounded-full px-2" id="wishlist-count-mobile">0</span>
     </div>
+    <!-- Removed Search, Cart, and Dark Mode from mobile menu as per request -->
   </div>
 </header>
 
@@ -2125,11 +2145,7 @@ const kategoriButtons = document.querySelectorAll(".category-card");
 const overlay = document.getElementById("overlay");
 const darkToggle = document.getElementById('darkToggle');
 const darkModeIcon = darkToggle.querySelector('.toggle-icon');
-const darkToggleMobile = document.createElement('button');
-darkToggleMobile.id = 'darkToggleMobile';
-darkToggleMobile.className = 'toggle-switch';
-darkToggleMobile.innerHTML = `<i class="toggle-icon sun-icon fas fa-sun"></i><i class="toggle-icon moon-icon fas fa-moon"></i>`;
-const darkModeIconMobile = darkToggleMobile.querySelector('.toggle-icon');
+// Removed darkToggleMobile creation here, will be handled dynamically if needed
 
 // Modals
 const cartModal = document.getElementById("cart-modal");
@@ -2597,24 +2613,13 @@ document.addEventListener('DOMContentLoaded', () => {
       document.body.classList.add('dark');
       darkModeIcon.classList.remove('fa-moon');
       darkModeIcon.classList.add('fa-sun');
-      if (darkModeIconMobile) {
-        darkModeIconMobile.classList.remove('fa-moon');
-        darkModeIconMobile.classList.add('fa-sun');
-      }
     } else {
       document.body.classList.remove('dark');
       darkModeIcon.classList.remove('fa-sun');
       darkModeIcon.classList.add('fa-moon');
-      if (darkModeIconMobile) {
-        darkModeIconMobile.classList.remove('fa-sun');
-        darkModeIconMobile.classList.add('fa-moon');
-      }
     }
   } catch (e) {
     darkModeIcon.classList.add('fa-moon');
-    if (darkModeIconMobile) {
-      darkModeIconMobile.classList.add('fa-moon');
-    }
   }
 
   // Search handlers
@@ -2892,17 +2897,9 @@ document.addEventListener('DOMContentLoaded', () => {
     if (theme === 'dark') {
       darkModeIcon.classList.remove('fa-moon');
       darkModeIcon.classList.add('fa-sun');
-      if (darkModeIconMobile) {
-        darkModeIconMobile.classList.remove('fa-moon');
-        darkModeIconMobile.classList.add('fa-sun');
-      }
     } else {
       darkModeIcon.classList.remove('fa-sun');
       darkModeIcon.classList.add('fa-moon');
-      if (darkModeIconMobile) {
-        darkModeIconMobile.classList.remove('fa-sun');
-        darkModeIconMobile.classList.add('fa-moon');
-      }
     }
     try {
       localStorage.setItem('theme', theme);
@@ -2910,39 +2907,6 @@ document.addEventListener('DOMContentLoaded', () => {
       // If localStorage is not available, continue without saving
     }
   });
-
-  // Dark mode toggle (Mobile)
-  const mobileMenuEl = document.getElementById('mobileMenu');
-  if (mobileMenuEl) {
-    const mobileDarkModeMenuItem = document.createElement('div');
-    mobileDarkModeMenuItem.className = 'menu-item';
-    mobileDarkModeMenuItem.innerHTML = `
-      <span class="flex-1">Mode Gelap</span>
-    `;
-    mobileDarkModeMenuItem.appendChild(darkToggleMobile);
-    mobileMenuEl.appendChild(mobileDarkModeMenuItem);
-
-    darkToggleMobile.addEventListener('click', () => {
-      document.body.classList.toggle('dark');
-      const theme = document.body.classList.contains('dark') ? 'dark' : 'light';
-      if (theme === 'dark') {
-        darkModeIcon.classList.remove('fa-moon');
-        darkModeIcon.classList.add('fa-sun');
-        darkModeIconMobile.classList.remove('fa-moon');
-        darkModeIconMobile.classList.add('fa-sun');
-      } else {
-        darkModeIcon.classList.remove('fa-sun');
-        darkModeIcon.classList.add('fa-moon');
-        darkModeIconMobile.classList.remove('fa-sun');
-        darkModeIconMobile.classList.add('fa-moon');
-      }
-      try {
-        localStorage.setItem('theme', theme);
-      } catch (e) {
-        // If localStorage is not available, continue without saving
-      }
-    });
-  }
 
   // Overlay click handler
   overlay.addEventListener("click", () => {
@@ -3045,46 +3009,29 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   }
   syncMobileCounts();
-  setInterval(syncMobileCounts, 500);
+  
+
+// Auto-close mobile menu when resizing to desktop
+window.addEventListener('resize', () => {
+  if (window.innerWidth >= 1024 && mobileMenuOpen) {
+    mobileMenuOpen = false;
+    hamburger.classList.remove('open');
+    mobileMenu.classList.remove('open');
+    mobileMenu.style.display = 'none';
+  }
+  // Ensure mobile menu items are removed/added based on screen size
+  updateMobileMenuItems();
+});
+
+setInterval(syncMobileCounts, 500);
 
   // Mobile menu navigation
-  const mobileSearchMenuItem = document.createElement('div');
-  mobileSearchMenuItem.id = 'mobile-search';
-  mobileSearchMenuItem.className = 'menu-item';
-  mobileSearchMenuItem.innerHTML = `<i class="fas fa-search"></i> <span>Cari Produk</span>`;
-  mobileMenu.prepend(mobileSearchMenuItem);
-
-  document.getElementById('mobile-search').addEventListener('click', () => {
-    openModal(searchModal);
-    searchInput.value = "";
-    setTimeout(() => searchInput.focus(), 100);
-    hamburger.click();
-  });
+  // Removed dynamic creation of Search, Cart, and Dark Mode menu items
+  // as per request to remove them from hamburger menu
 
   document.getElementById('mobile-wishlist').addEventListener('click', () => {
     renderWishlist();
     openModal(wishlistModal);
-    hamburger.click();
-  });
-  
-  const mobileCartMenuItem = document.createElement('div');
-  mobileCartMenuItem.id = 'mobile-cart';
-  mobileCartMenuItem.className = 'menu-item';
-  mobileCartMenuItem.innerHTML = `
-    <i class="fas fa-shopping-cart"></i> <span>Keranjang</span>
-    <span class="ml-auto bg-orange-500 text-white text-xs rounded-full px-2" id="cart-count-mobile">0</span>
-  `;
-  mobileMenu.insertBefore(mobileCartMenuItem, document.getElementById('mobile-wishlist').nextSibling);
-
-  document.getElementById('mobile-cart').addEventListener('click', () => {
-    if (Object.keys(cart).length === 0) {
-      showNotif("Keranjang kosong");
-      hamburger.click();
-      return;
-    }
-    renderCart();
-    updateCartTotal();
-    openModal(cartModal);
     hamburger.click();
   });
   
@@ -3239,7 +3186,7 @@ document.addEventListener('DOMContentLoaded', () => {
         showBadge(loginSuccessBadge, "Berhasil Login!");
         setTimeout(() => {
           openModal(reportBugModal);
-          resetReportBugForm();
+          resetReportEventForm(); // Fixed: should be resetReportBugForm
         }, 1000); // Delay to show login success badge
       }
     });
@@ -3347,6 +3294,105 @@ document.addEventListener('DOMContentLoaded', () => {
     bugDescriptionInput.value = '';
     bugCharCount.textContent = '0/500';
   }
+
+  // Function to update mobile menu items based on screen size
+  function updateMobileMenuItems() {
+    const mobileSearchMenuItem = document.getElementById('mobile-search');
+    const mobileCartMenuItem = document.getElementById('mobile-cart');
+    const mobileDarkModeMenuItem = document.getElementById('mobile-dark-mode'); // New ID for dark mode item
+
+    // Remove existing dynamic items to prevent duplicates
+    if (mobileSearchMenuItem) mobileSearchMenuItem.remove();
+    if (mobileCartMenuItem) mobileCartMenuItem.remove();
+    if (mobileDarkModeMenuItem) mobileDarkModeMenuItem.remove();
+
+    // Add items back if screen size requires them
+    // Based on your request, these items should NOT be in the hamburger menu
+    // so this section will remain commented out or removed.
+    // If you change your mind and want them back in the hamburger menu for certain screen sizes,
+    // you can uncomment and adjust the logic here.
+    /*
+    if (window.innerWidth < 1024) { // Example condition if you want them back for <1024px
+      // Add Search
+      const newMobileSearchMenuItem = document.createElement('div');
+      newMobileSearchMenuItem.id = 'mobile-search';
+      newMobileSearchMenuItem.className = 'menu-item';
+      newMobileSearchMenuItem.innerHTML = `<i class="fas fa-search"></i> <span>Cari Produk</span>`;
+      mobileMenu.prepend(newMobileSearchMenuItem);
+      newMobileSearchMenuItem.addEventListener('click', () => {
+        openModal(searchModal);
+        searchInput.value = "";
+        setTimeout(() => searchInput.focus(), 100);
+        hamburger.click();
+      });
+
+      // Add Cart
+      const newMobileCartMenuItem = document.createElement('div');
+      newMobileCartMenuItem.id = 'mobile-cart';
+      newMobileCartMenuItem.className = 'menu-item';
+      newMobileCartMenuItem.innerHTML = `
+        <i class="fas fa-shopping-cart"></i> <span>Keranjang</span>
+        <span class="ml-auto bg-orange-500 text-white text-xs rounded-full px-2" id="cart-count-mobile">0</span>
+      `;
+      mobileMenu.insertBefore(newMobileCartMenuItem, document.getElementById('mobile-wishlist').nextSibling);
+      newMobileCartMenuItem.addEventListener('click', () => {
+        if (Object.keys(cart).length === 0) {
+          showNotif("Keranjang kosong");
+          hamburger.click();
+          return;
+        }
+        renderCart();
+        updateCartTotal();
+        openModal(cartModal);
+        hamburger.click();
+      });
+
+      // Add Dark Mode Toggle
+      const newMobileDarkModeMenuItem = document.createElement('div');
+      newMobileDarkModeMenuItem.id = 'mobile-dark-mode'; // Unique ID
+      newMobileDarkModeMenuItem.className = 'menu-item';
+      newMobileDarkModeMenuItem.innerHTML = `
+        <span class="flex-1">Mode Gelap</span>
+        <button id="darkToggleMobile" class="toggle-switch">
+          <i class="toggle-icon sun-icon fas fa-sun"></i><i class="toggle-icon moon-icon fas fa-moon"></i>
+        </button>
+      `;
+      mobileMenu.appendChild(newMobileDarkModeMenuItem);
+
+      const darkToggleMobileBtn = document.getElementById('darkToggleMobile');
+      const darkModeIconMobile = darkToggleMobileBtn.querySelector('.toggle-icon');
+      // Initialize mobile dark mode toggle state
+      if (document.body.classList.contains('dark')) {
+        darkModeIconMobile.classList.remove('fa-moon');
+        darkModeIconMobile.classList.add('fa-sun');
+      } else {
+        darkModeIconMobile.classList.remove('fa-sun');
+        darkModeIconMobile.classList.add('fa-moon');
+      }
+      darkToggleMobileBtn.addEventListener('click', () => {
+        document.body.classList.toggle('dark');
+        const theme = document.body.classList.contains('dark') ? 'dark' : 'light';
+        if (theme === 'dark') {
+          darkModeIcon.classList.remove('fa-moon');
+          darkModeIcon.classList.add('fa-sun');
+          darkModeIconMobile.classList.remove('fa-moon');
+          darkModeIconMobile.classList.add('fa-sun');
+        } else {
+          darkModeIcon.classList.remove('fa-sun');
+          darkModeIcon.classList.add('fa-moon');
+          darkModeIconMobile.classList.remove('fa-sun');
+          darkModeIconMobile.classList.add('fa-moon');
+        }
+        try {
+          localStorage.setItem('theme', theme);
+        } catch (e) { }
+      });
+    }
+    */
+  }
+
+  // Initial call to set up mobile menu items
+  updateMobileMenuItems();
 });
 </script>
 

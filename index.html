@@ -1682,12 +1682,6 @@ input[type="date"]:focus {
   box-shadow: 0 0 0 2px rgba(249, 115, 22, 0.2);
 }
 
-body.dark input[type="date"] {
-  background: #1f2937;
-  border-color: #4b5563;
-  color: #e2e8f0;
-}
-
 body.dark input[type="date"]:focus {
   border-color: #f97316;
   box-shadow: 0 0 0 2px rgba(249, 115, 22, 0.3);
@@ -2533,7 +2527,7 @@ function displayProducts(list) {
     price.textContent = "Rp " + item.price.toLocaleString("id-ID");
     
     const buttonContainer = document.createElement("div");
-    buttonContainer.className = "flex gap-2 w-full";
+    buttonContainer.className = "product-actions"; /* Menggunakan class product-actions */
     
     const wishlistButton = document.createElement("button");
     wishlistButton.className = "btn-wishlist";

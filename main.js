@@ -1239,9 +1239,7 @@ document.addEventListener('DOMContentLoaded', () => {
     bugCharCount.textContent = '0/500';
   }
 });
-</script>
 
-<script>
 document.addEventListener("DOMContentLoaded", function() {
   const headerOffset = document.querySelector('header')?.offsetHeight || 60;
   function scrollToSection(selector) {

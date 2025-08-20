@@ -1667,12 +1667,6 @@ input[type="date"]:focus {
   box-shadow: 0 0 0 2px rgba(249, 115, 22, 0.2);
 }
 
-body.dark input[type="date"] {
-  background: #1f2937;
-  border-color: #4b5563;
-  color: #e2e8f0;
-}
-
 body.dark input[type="date"]:focus {
   border-color: #f97316;
   box-shadow: 0 0 0 2px rgba(249, 115, 22, 0.3);
@@ -1711,3 +1705,39 @@ body.dark input[type="date"]::-webkit-calendar-picker-indicator {
   display: none;
   box-shadow: 0 4px 10px rgba(0,0,0,0.1);
 }
+
+  
+
+/* === NAVBAR VISIBILITY RULES — canonical === */
+@media (min-width: 1024px) {
+  .header-nav-desktop { display: flex !important; }
+  .hamburger { display: none !important; }
+}
+@media (max-width: 1023px) {
+  .header-nav-desktop { display: none !important; }
+  .hamburger { display: flex !important; }
+}
+@media (max-width: 767px) {
+  .header-nav-desktop { display: none !important; }
+  .hamburger { display: flex !important; }
+}
+@media (max-width: 519px) {
+  .header-nav-desktop { display: none !important; }
+  .hamburger { display: flex !important; }
+}
+
+  .product-actions {
+    display: flex;
+    gap: 0.5rem;
+    margin-top: auto;
+    transition: all 0.3s ease;
+  }
+  @media (max-width: 519px) {
+    .product-actions {
+      flex-direction: column;
+      align-items: stretch;
+    }
+    .product-actions button {
+      width: 100%;
+    }
+  }

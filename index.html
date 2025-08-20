@@ -1747,6 +1747,25 @@ body.dark input[type="date"]::-webkit-calendar-picker-indicator {
   .hamburger { display: flex !important; }
 }
 </style>
+
+<style>
+  .product-actions {
+    display: flex;
+    gap: 0.5rem;
+    margin-top: auto;
+    transition: all 0.3s ease;
+  }
+  @media (max-width: 519px) {
+    .product-actions {
+      flex-direction: column;
+      align-items: stretch;
+    }
+    .product-actions button {
+      width: 100%;
+    }
+  }
+</style>
+
 </head>
 <body class="bg-gray-100 text-gray-800">
 

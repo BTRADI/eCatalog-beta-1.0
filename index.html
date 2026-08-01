@@ -1,607 +1,3007 @@
-<!DOCTYPE html>
-<html lang="id">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>KEDAI MAS HARIS</title>
-  <link rel="icon" type="image/png" href="logo-kmh.png" />
-  <link rel="apple-touch-icon" href="logo-kmh.png" />
-  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet" />
-  <script src="https://cdn.tailwindcss.com"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollToPlugin.min.js"></script>
-  <!-- Icon Font Awesome -->
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-  <!-- Swiper CSS -->
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css"/>
-  <link rel="stylesheet" href="style.css" />
-  <!-- Three.js for Dispersion Effect -->
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
-  <!-- html2canvas for Dispersion Effect -->
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+body {
+  font-family: 'Poppins', sans-serif;
+  transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease;
+}
 
-</head>
-<body class="bg-gray-100 text-gray-800">
+/* Tambahkan transisi untuk dark mode */
+body, body.dark {
+  transition: background-color 0.5s ease, color 0.3s ease;
+}
 
-<!-- Notifikasi -->
-<div id="notif" class="notif text-sm">Berhasiil ditambahkan ke keranjang</div>
-<div id="copied" class="copied-badge">Nomor disalin</div>
-<div id="sent" class="sent-badge">Pesanan terkirim</div>
-<div id="login-success-badge" class="login-success-badge">Berhasil Login!</div>
+/* NAV underline custom */
+.nav-link { position: relative; }
+.nav-link::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  bottom: -4px;
+  height: 2px;
+  width: 0;
+  background: #f97316;
+  transition: width 0.3s ease;
+}
+.nav-link:hover::after { width: 100%; }
 
-<!-- === HEADER === -->
-<header class="top">
-  <div class="max-w-6xl mx-auto px-4 py-3 flex items-center justify-between w-full">
-    <!-- Kiri: Logo & Navigasi (Desktop) -->
-    <div class="flex items-center gap-6">
-      <!-- Logo (Desktop & Mobile) -->
-      <div class="flex items-center gap-2 logo-desktop">
-        <i class="fas fa-store text-2xl text-orange-500"></i>
-        <span class="logo-text font-semibold text-lg">eCatalog</span>
-      </div>
-      <!-- Navigasi Desktop (Hanya terlihat di layar > 1024px) -->
-      <nav class="header-nav-desktop hidden lg:flex gap-6 items-center">
-        <a href="#home-section" class="nav-link hover:text-orange-500 transition-colors">Home</a>
-        <a href="#categories-section" class="nav-link hover:text-orange-500 transition-colors">Kategori</a>
-        <a href="#menu-section" class="nav-link hover:text-orange-500 transition-colors">Menu</a>
-        <a href="#contact-section" class="nav-link hover:text-orange-500 transition-colors">Kontak</a>
-      </nav>
-    </div>
 
-    <!-- Tengah: Search Trigger -->
-    <div id="search-container" class="flex-1 flex justify-center mx-4">
-      <div class="search-trigger-wrapper"> <!-- FIX: Wrapper for scale animation -->
-        <div id="search-trigger" class="search-trigger">
-          <i class="fas fa-search"></i>
-          <span>Cari produk anda...</span>
-        </div>
-      </div>
-    </div>
+/* Pastikan semua section yang dituju navigasi transparan */
+#home-section,
+#categories-section,
+#menu-section,
+#contact-section {
+  border: none !important;
+  box-shadow: none !important;
+  background: transparent !important;
+}
 
-    <!-- Kanan: Dark Mode, Wishlist, Cart (Desktop) & Hamburger (Mobile) -->
-    <div class="flex gap-4 items-center header-actions-desktop">
-      <!-- Tombol Dark Mode (Desktop) -->
-      <button id="darkToggle" class="toggle-switch dark-mode-desktop">
-        <i class="toggle-icon sun-icon fas fa-sun"></i>
-        <i class="toggle-icon moon-icon fas fa-moon"></i>
-      </button>
-      <!-- Wishlist (Desktop - Sembunyi di <1024px) -->
-      <button id="wishlist-btn" class="relative wishlist-desktop hidden lg:block" aria-label="Buka Wishlist">
-        <i class="fas fa-heart text-xl"></i>
-        <span class="absolute -top-2 -right-2 text-xs bg-pink-500 text-white rounded-full px-1.5" id="wishlist-count">0</span>
-      </button>
-      <!-- Cart (Desktop) -->
-      <button id="cart-btn" class="relative cart-desktop" aria-label="Buka Keranjang">
-        <i class="fas fa-shopping-cart text-xl"></i>
-        <span class="absolute -top-2 -right-2 text-xs bg-orange-500 text-white rounded-full px-1.5" id="cart-count">0</span>
-      </button>
-      <!-- Tombol Hamburger (Mobile - Muncul di <1024px) -->
-      <div id="hamburger" class="hamburger lg:hidden">
-        <span></span>
-        <span></span>
-        <span></span>
-      </div>
-    </div>
-  </div>
+/* Glassmorphism Header tanpa garis bawah */
+header {
+  position: sticky;
+  top: 0;
+  width: 100%;
+  z-index: 50;
+  transition: all 0.3s ease, border-color 0.3s ease; /* Tambahkan border-color ke transisi */
+  padding: 1rem 1.5rem;
+  border-bottom: 1px solid transparent; /* Border selalu ada, tapi transparan */
+  display: flex; /* Tambahkan flex untuk layout header */
+  align-items: center;
+  justify-content: space-between; /* Pisahkan elemen kiri, tengah, kanan */
+}
 
-  <!-- Menu Mobile Overlay -->
-  <div id="mobileMenu" class="mobile-menu">
-    <div id="mobile-nav-links">
-      <a href="#home-section" class="menu-item nav-link-mobile">
-        <i class="fas fa-home"></i> <span>Home</span>
-      </a>
-      <a href="#categories-section" class="menu-item nav-link-mobile">
-        <i class="fas fa-th-large"></i> <span>Kategori</span>
-      </a>
-      <a href="#menu-section" class="menu-item nav-link-mobile">
-        <i class="fas fa-book-open"></i> <span>Menu</span>
-      </a>
-      <a href="#contact-section" class="menu-item nav-link-mobile">
-        <i class="fas fa-address-book"></i> <span>Kontak</span>
-      </a>
-    </div>
-    <!-- Wishlist di Mobile Menu (Muncul di <1024px) -->
-    <div id="mobile-wishlist" class="menu-item">
-      <i class="fas fa-heart"></i> <span>Wishlist</span>
-      <span class="ml-auto bg-pink-500 text-white text-xs rounded-full px-2" id="wishlist-count-mobile">0</span>
-    </div>
-    <!-- Removed Search, Cart, and Dark Mode from mobile menu as per request -->
-  </div>
-</header>
+/* Saat di atas (no scroll) → transparan */
+header.top {
+  background: transparent;
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
+  box-shadow: none;
+}
 
-<!-- Main Content -->
-<main class="max-w-6xl mx-auto px-4 py-6 block">
-  <!-- Judul Kedai -->
-  <h1 class="text-4xl font-extrabold text-center text-orange-500 mb-6 select-none" style="max-width:600px; margin-left:auto; margin-right:auto;">
-    KEDAI MAS HARIS
-  </h1>
+/* Saat discroll → efek glass tanpa border */
+header.scrolled {
+  background: rgba(255, 255, 255, 0.35);
+  backdrop-filter: blur(18px) saturate(180%);
+  -webkit-backdrop-filter: blur(18px) saturate(180%);
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.06);
+  border-bottom-color: transparent; /* Pastikan border transparan di light mode saat discroll */
+}
 
-  <!-- Home Section -->
-  <section id="home-section" class="w-5/6 mx-auto rounded-2xl shadow-md mb-6">
-    <div class="swiper mySwiper">
-      <div class="swiper-wrapper">
-        <div class="swiper-slide bg-lime-300">
-          <h2 class="text-2xl font-bold text-gray-800">COMING SOON</h2>
-          <p class="text-sm mt-2 bg-white inline-block px-4 py-1 rounded-full text-lime-600 font-semibold">STAY TUNED</p>
-        </div>
-        <div class="swiper-slide bg-teal-300">
-          <h2 class="text-2xl font-bold text-gray-800">COMING SOON</h2>
-          <p class="text-sm mt-2 bg-white inline-block px-4 py-1 rounded-full text-lime-600 font-semibold">EXCITING THINGS</p>
-        </div>
-        <div class="swiper-slide bg-orange-300">
-          <h2 class="text-2xl font-bold text-gray-800">COMING SOON</h2>
-          <p class="text-sm mt-2 bg-white inline-block px-4 py-1 rounded-full text-lime-600 font-semibold">NEW ARRIVALS</p>
-        </div>
-      </div>
+/* Dark mode */
+body.dark header.top {
+  background: transparent;
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
+  box-shadow: none;
+}
 
-      <!-- Navigation Arrows -->
-    <div class="swiper-button-next"></div>
-    <div class="swiper-button-prev"></div>
-      <div class="swiper-pagination"></div>
-    </div>
-  </section>
+body.dark header.scrolled {
+  background: rgba(26, 35, 50, 0.35);
+  backdrop-filter: blur(18px) saturate(180%);
+  -webkit-backdrop-filter: blur(18px) saturate(180%);
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.06);
+  border-bottom-color: rgba(255, 255, 255, 0.1); /* Atur warna border untuk dark mode saat discroll */
+}
 
-  <!-- Categories Section -->
-<section id="categories-section">
-    <h3 class="text-lg font-semibold mb-3">Kategori</h3>
-  <div class="grid  grid-cols-2 sm:grid-cols-3 gap-4 mb-6" id="kategori-container">
-    <div class="category-card bg-gray-400 active" data-kategori="all">Semua ></div>
-    <div class="category-card bg-green-500" data-kategori="Karbohidrat">Karbohidrat ></div>
-    <div class="category-card bg-yellow-500" data-kategori="Asin">Asin ></div>
-    <div class="category-card bg-pink-500" data-kategori="Manis">Manis ></div>
-  </div>
+/* Logo text color control */
+.logo-text {
+  color: rgb(var(--dark-body-color)); /* Light mode orange */
+}
 
-  <!-- Menu Section -->
-<section id="menu-section">
-    <h3 class="text-lg font-semibold mb-3">Daftar Menu</h3>
-  <div class="menu-grid grid grid-cols-2 gap-4 md:grid-cols-4" id="menu-container"></div>
+body.dark .logo-text {
+  color: #f97316; /* Ikut warna body dark mode */
+}
 
-  <!-- Produk Terkait/Rekomendasi di Halaman Menu -->
-  <div id="related-products-section" class="mt-8 hidden">
-    <h3 class="text-lg font-semibold mb-3">Produk Lain yang Mungkin Anda Suka</h3>
-    <div class="menu-grid grid grid-cols-2 gap-4 md:grid-cols-4" id="related-products-container"></div>
-  </div>
-</main>
+/* Modern Toggle Switch Styles */
+.toggle-switch {
+  position: relative;
+  width: 60px;
+  height: 32px;
+  background: #374151;
+  border-radius: 16px;
+  border: none;
+  cursor: pointer;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  overflow: hidden;
+  box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.2);
+}
 
-<!-- Contact Section (Footer) -->
-<section id="contact-section" class="max-w-6xl mx-auto px-4 py-8">
-  <h3 class="text-2xl font-bold text-center mb-8">Hubungi Kami</h3>
-  <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-    <!-- Kontak Umum -->
-    <div class="contact-card flex flex-col items-center text-center">
-      <i class="fas fa-headset text-4xl text-orange-500 mb-4"></i>
-      <h4 class="font-semibold text-xl mb-2">Kontak Cepat</h4>
-      <p class="text-gray-600 mb-4 footer-text">Punya pertanyaan atau ingin memesan?</p>
+.toggle-switch::before {
+  content: '';
+  position: absolute;
+  top: 2px;
+  left: 2px;
+  width: 28px;
+  height: 28px;
+  background: white;
+  border-radius: 50%;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
+  z-index: 2;
+}
 
-      <div class="contact-dropdown mb-3">
-        <button class="contact-button whatsapp" id="whatsapp-contact-btn">
-          <i class="fab fa-whatsapp"></i> WhatsApp
-        </button>
-        <div class="contact-dropdown-content" id="whatsapp-dropdown-content">
-          <a href="#" data-action="order-event-wa">Order untuk Acara</a>
-          <a href="#" data-action="report-bug-wa">Report Bug</a>
-        </div>
-      </div>
+.toggle-switch .toggle-icon {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 14px;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  z-index: 1;
+}
 
-      <div class="contact-dropdown">
-        <button class="contact-button email" id="email-contact-btn">
-          <i class="fas fa-envelope"></i> Email
-        </button>
-        <div class="contact-dropdown-content" id="email-dropdown-content">
-          <a href="#" data-action="order-event-email">Order untuk Acara</a>
-          <a href="#" data-action="report-bug-email">Report Bug</a>
-        </div>
-      </div>
-    </div>
+.toggle-switch .sun-icon {
+  left: 8px;
+  color: #ffcc00 !important;
+  opacity: 0;
+  transform: translateY(-50%) scale(0.8);
+}
 
-    <!-- Lokasi & Jam Buka -->
-    <div class="contact-card flex flex-col items-center text-center">
-      <i class="fas fa-map-marker-alt text-4xl text-orange-500 mb-4"></i>
-      <h4 class="font-semibold text-xl mb-2">Lokasi Kami</h4>
-      <p class="text-gray-600 mb-2 footer-text">Perum Karaba Indah</p>
-      <p class="text-gray-600 mb-4 footer-text">Buka setiap hari</p>
-      <iframe
-    src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3965.549679362615!2d107.27811017509626!3d-6.322723393666768!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x2e699d78506a9903%3A0x89f074eb4c00a83e!2sBlok%20AD%20Karaba%20Indah!5e0!3m2!1sid!2sid!4v1755508173604!5m2!1sid!2sid"
-    width="100%" height="200" style="border:0;" allowfullscreen="" loading="lazy"
-    referrerpolicy="no-referrer-when-downgrade" class="rounded-lg shadow-md">
-</iframe>
+.toggle-switch .moon-icon {
+  right: 8px;
+  color: white !important;
+  opacity: 1;
+  transform: translateY(-50%) scale(1);
+}
 
-    </div>
+/* Active (Dark Mode) State */
+body.dark .toggle-switch {
+  background-color: transparent;
+  border: 1px solid white !important
+}
 
-    <!-- Request Desain Website -->
-    <div class="contact-card flex flex-col items-center text-center">
-      <i class="fas fa-laptop-code text-4xl text-orange-500 mb-4"></i>
-      <h4 class="font-semibold text-xl mb-2">Butuh Website untuk Usaha Anda?</h4>
-      <p class="text-gray-600 mb-4 footer-text">Saya juga menyediakan jasa desain website profesional untuk membantu usaha Anda berkembang secara online.</p>
-      <a href="https://wa.me/6281389868594?text=Halo%20saya%20tertarik%20dengan%20jasa%20desain%20website%20Anda.%20Bisa%20berikan%20informasi%20lebih%20lanjut?" target="_blank" class="contact-button request-design">
-        <i class="fab fa-whatsapp"></i> Request Desain Website
-      </a>
-    </div>
-  </div>
-  <p class="text-center text-gray-500 text-sm mt-8 footer-text">&copy; 2025 KEDAI MAS HARIS. All rights reserved.</p>
-</section>
+body.dark .toggle-switch::before {
+  transform: translateX(28px);
+  background-color: white;
+}
 
-<!-- Overlay -->
-<div id="overlay" aria-hidden="true"></div>
+body.dark .toggle-switch .sun-icon {
+  opacity: 1;
+  transform: translateY(-50%) scale(1);
+}
 
-<!-- Modal Keranjang -->
-<div id="cart-modal" class="modal" aria-hidden="true" role="dialog" aria-modal="true" aria-labelledby="cart-title">
-  <button class="modal-close-btn" data-modal-id="cart-modal"><i class="fas fa-times"></i></button>
-  <div class="modal-header-cart"> <!-- Tambahkan class baru di sini -->
-    <h3 id="cart-title">Keranjang</h3> <!-- Hapus mb-0 di sini -->
-    <button id="clear-cart-btn" class="clear-cart-btn">
-      <i class="fas fa-trash-alt"></i> Hapus Semua
-    </button>
-  </div>
-  <div id="cart-items" class="space-y-4 max-h-64 overflow-y-auto mb-4"></div>
+body.dark .toggle-switch .moon-icon {
+  opacity: 0;
+  transform: translateY(-50%) scale(0.8);
+}
 
-  <!-- Input Promo Code -->
-  <div class="promo-input-container">
-    <input type="text" id="promo-code-input" placeholder="Masukkan kode promo" />
-    <button id="apply-promo-btn">Terapkan</button>
-  </div>
-  <p id="promo-message" class="promo-applied-text hidden"></p>
+/* Kategori */
+.category-card {
+  border-radius: 1rem;
+  color: white;
+  padding: 1.2rem;
+  font-weight: 600;
+  text-align: center;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
 
-  <div class="flex justify-between items-center font-semibold text-sm mb-4">
-    <span>Total:</span>
-    <span id="cart-total">Rp 0</span>
-  </div>
-  <!-- New: Promo Price Display -->
-  <div id="promo-price-display" class="flex justify-between items-center font-semibold text-sm mb-4 hidden">
-    <span class="text-gray-500">Harga Asli:</span>
-    <span id="original-total" class="promo-original-price"></span>
-    <span class="text-gray-500">Harga Diskon:</span>
-    <span id="discounted-total" class="promo-discounted-price"></span>
-  </div>
+.category-card.active {
+  border: 3px solid #1f2937;
+  transform: scale(1.05);
+  box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+}
 
-  <div class="flex flex-col gap-3 mt-4">
-    <button id="checkout-btn">Checkout</button>
-    <button class="modal-back-btn" data-modal-id="cart-modal">
-      <i class="fas fa-arrow-left"></i> Kembali
-    </button>
-  </div>
-</div>
+/* Enhanced Button Styles */
+.btn-pesan,
+#checkout-btn,
+#send-wa,
+#do-search,
+.copy-btn,
+.payment-btn {
+  position: relative;
+  overflow: hidden;
+  transition: all 0.3s ease;
+}
 
-<!-- Modal Edit Cart Item -->
-<div id="edit-cart-modal" class="modal" aria-hidden="true" role="dialog" aria-modal="true" aria-labelledby="edit-cart-title">
-  <button class="modal-close-btn" data-modal-id="edit-cart-modal"><i class="fas fa-times"></i></button>
-  <h3 id="edit-cart-title" class="mb-3">Edit Jumlah</h3>
-  <div id="edit-cart-content" class="mb-4">
-    <div class="bg-gray-50 p-3 rounded-lg flex items-center gap-3 mb-4">
-      <img id="edit-item-image" src="" class="w-12 h-12 rounded-lg">
-      <div class="flex-1">
-        <p id="edit-item-name" class="font-medium text-sm"></p>
-        <p id="edit-item-price" class="text-xs text-gray-500"></p>
-      </div>
-    </div>
-    <div class="flex items-center justify-center gap-4">
-      <button id="edit-minus-btn" class="qty-btn minus-red">
-        <i class="fas fa-minus"></i>
-      </button>
-      <span id="edit-qty-display" class="text-xl font-bold min-w-[40px] text-center">1</span>
-      <button id="edit-plus-btn" class="qty-btn plus">
-        <i class="fas fa-plus"></i>
-      </button>
-    </div>
-  </div>
-  <div class="flex flex-col gap-3 mt-4">
-    <button id="save-edit-cart" class="flex-1 bg-green-500 text-white py-2 rounded-xl font-semibold hover:bg-green-600">
-      <i class="fas fa-check mr-2"></i>Simpan
-    </button>
-    <button class="modal-back-btn" data-modal-id="edit-cart-modal">
-      <i class="fas fa-arrow-left"></i> Kembali
-    </button>
-  </div>
-</div>
+.btn-pesan::before,
+#checkout-btn::before,
+#send-wa::before,
+#do-search::before,
+.copy-btn::before,
+.payment-btn::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+  transition: left 0.5s;
+}
 
-<!-- Modal Konfirmasi Hapus -->
-<div id="confirm-delete-modal" class="modal" aria-hidden="true" role="dialog" aria-modal="true" aria-labelledby="confirm-delete-title">
-  <button class="modal-close-btn" data-modal-id="confirm-delete-modal"><i class="fas fa-times"></i></button>
-  <h3 id="confirm-delete-title" class="mb-3 text-center">Konfirmasi Hapus</h3>
-  <div class="text-center mb-4">
-    <div class="text-4xl mb-2">
-      <i class="fas fa-exclamation-triangle text-yellow-500"></i>
-    </div>
-    <p id="confirm-delete-message" class="text-gray-600"></p>
-  </div>
-  <div class="flex flex-col gap-3 mt-4">
-    <button id="confirm-delete-yes" class="flex-1 bg-red-500 text-white py-2 rounded-xl font-semibold hover:bg-red-600">
-      <i class="fas fa-trash-alt mr-2"></i>Ya, Hapus
-    </button>
-    <button class="modal-back-btn" data-modal-id="confirm-delete-modal">
-      <i class="fas fa-arrow-left"></i> Kembali
-    </button>
-  </div>
-</div>
+.btn-pesan:hover::before,
+#checkout-btn:hover::before,
+#send-wa:hover::before,
+#do-search:hover::before,
+.copy-btn:hover::before,
+.payment-btn:hover::before {
+  left: 100%;
+}
 
-<!-- Modal Wishlist -->
-<div id="wishlist-modal" class="modal" aria-hidden="true" role="dialog" aria-modal="true" aria-labelledby="wishlist-title">
-  <button class="modal-close-btn" data-modal-id="wishlist-modal"><i class="fas fa-times"></i></button>
-  <h3 id="wishlist-title">Wishlist</h3>
-  <div id="wishlist-items" class="space-y-4 max-h-80 overflow-y-auto mb-4"></div>
-  <div class="flex flex-col gap-3 mt-4">
-    <button class="modal-back-btn" data-modal-id="wishlist-modal">
-      <i class="fas fa-arrow-left"></i> Kembali
-    </button>
-  </div>
-</div>
+/* Button Gradients and Effects */
+.btn-pesan {
+  background: linear-gradient(135deg, #f97316, #ea580c) !important;
+  box-shadow: 0 4px 15px rgba(249, 115, 22, 0.4);
+}
 
-<!-- Modal Search -->
-<div id="search-modal" class="modal" aria-hidden="true" role="dialog" aria-modal="true" aria-labelledby="search-title">
-  <button class="modal-close-btn" data-modal-id="search-modal"><i class="fas fa-times"></i></button>
-  <h3 id="search-title" class="mb-3">Cari Produk</h3>
-  <div class="mb-3">
-    <input
-      id="search-input"
-      type="text"
-      placeholder="Cari..."
-      class="w-full border px-3 py-2 rounded-lg"
-      autocomplete="off"
-    />
-  </div>
-  <div class="flex flex-col gap-3 mt-4">
-    <button id="do-search" class="flex-1 bg-orange-500 text-white py-2 rounded-xl font-semibold hover:bg-orange-600">
-      <i class="fas fa-search mr-2"></i>Cari
-    </button>
-    <button class="modal-back-btn" data-modal-id="search-modal">
-      <i class="fas fa-arrow-left"></i> Kembali
-    </button>
-  </div>
-</div>
+.btn-pesan:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(249, 115, 22, 0.5);
+}
 
-<!-- Modal Pilihan Pembayaran - ENHANCED -->
-<div id="payment-modal" class="modal" aria-hidden="true" role="dialog" aria-modal="true" aria-labelledby="payment-title" tabindex="-1">
-  <button class="modal-close-btn" data-modal-id="payment-modal"><i class="fas fa-times"></i></button>
-  <h3 id="payment-title" class="text-center mb-4">Pilih Metode Pembayaran</h3>
-  <button id="pay-cash" class="payment-btn cash">
-    <i class="fas fa-money-bill-wave text-xl"></i>
-    <span>Bayar Tunai</span>
-  </button>
-  <button id="pay-dana" class="payment-btn dana">
-    <i class="fas fa-mobile-alt text-xl"></i>
-    <span>DANA</span>
-  </button>
-  <button id="pay-transfer" class="payment-btn transfer">
-    <i class="fas fa-university text-xl"></i>
-    <span>Transfer Bank</span>
-  </button>
-  <button id="pay-qris" class="payment-btn qris">
-    <i class="fas fa-qrcode text-xl"></i>
-    <span>QRIS</span>
-  </button>
+#checkout-btn {
+  background: linear-gradient(135deg, #f97316, #ea580c) !important;
+  box-shadow: 0 4px 15px rgba(249, 115, 22, 0.4);
+}
 
-  <!-- Sub-pilihan bank (muncul setelah klik Transfer Bank) -->
-  <div id="bank-options" class="hidden space-y-3 mt-1">
-    <p class="text-sm text-center text-gray-500 dark:text-gray-300 mb-2">Pilih Bank:</p>
-    <button id="pay-sinarmas" class="payment-btn bank-sinarmas">
-      <i class="fas fa-university text-xl"></i>
-      <span>Bank Sinarmas</span>
-    </button>
-    <button id="pay-bca" class="payment-btn bank-bca">
-      <i class="fas fa-university text-xl"></i>
-      <span>Bank BCA</span>
-    </button>
-    <button id="pay-bni" class="payment-btn bank-bni">
-      <i class="fas fa-university text-xl"></i>
-      <span>Bank BNI</span>
-    </button>
-  </div>
+#checkout-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(249, 115, 22, 0.5);
+}
 
-  <div class="flex flex-col gap-3 mt-4">
-    <button class="modal-back-btn" data-modal-id="payment-modal">
-      <i class="fas fa-arrow-left"></i> Kembali
-    </button>
-  </div>
-</div>
+/* Search Input Contrast Fix */
+#search-input {
+  background: white;
+  color: #1f2937;
+  transition: all 0.3s ease;
+}
 
-<!-- Modal Info Pembayaran -->
-<div id="info-modal" class="modal" aria-hidden="true" role="dialog" aria-modal="true" aria-labelledby="info-title" tabindex="-1">
-  <button class="modal-close-btn" data-modal-id="info-modal"><i class="fas fa-times"></i></button>
-  <h3 id="info-title" class="mb-3"></h3>
-  <div id="info-content" class="mb-4">
-    <!-- QR Code akan ditambahkan di sini oleh JS -->
-    <img id="dana-qr-code" src="QR-KDH.jpeg" alt="QR Code QRIS KEDAI MAS HARIS" class="hidden mx-auto mb-4 w-64 h-64 object-contain rounded-lg cursor-pointer qr-enlargeable" title="Klik untuk perbesar QR Code">
-  </div>
+/* Dark Mode Styles */
+body.dark {
+  --dark-body-color: 26, 35, 50; /* RGB dari warna body dark */
+  background: rgb(var(--dark-body-color));
+  color: #e2e8f0;
+}
 
-  <!-- Data pengantaran (wajib diisi sebelum Kirim WA) -->
-  <div id="delivery-form" class="space-y-3 mb-4 border-t border-gray-200 dark:border-gray-600 pt-4">
-    <p class="text-sm font-semibold text-gray-700 dark:text-gray-200">Data Pengantaran</p>
-    <div>
-      <label for="checkout-name" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Nama Pemesan <span class="text-red-500">*</span></label>
-      <input type="text" id="checkout-name" class="w-full border px-3 py-2 rounded-lg mt-1" placeholder="Nama lengkap pemesan" autocomplete="name" />
-    </div>
-    <div>
-      <label for="checkout-address" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Alamat Pengantaran <span class="text-red-500">*</span></label>
-      <textarea id="checkout-address" rows="2" class="w-full border px-3 py-2 rounded-lg mt-1" placeholder="Alamat lengkap tujuan pengantaran"></textarea>
-    </div>
-    <p id="delivery-form-hint" class="text-xs text-red-500 hidden">Harap isi nama dan alamat pengantaran terlebih dahulu.</p>
-  </div>
+body.dark #search-input {
+  background: #1f2937;
+  color: #e2e8f0;
+  border-color: #4b5563;
+}
 
-  <div class="flex flex-col gap-3 mt-4">
-    <button id="send-wa" class="flex-1 bg-green-500 text-white py-2 rounded-xl font-semibold hover:bg-green-600 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:bg-green-500" disabled>
-      <i class="fab fa-whatsapp mr-2"></i>Kirim WA
-    </button>
-    <button class="modal-back-btn" data-modal-id="info-modal">
-      <i class="fas fa-arrow-left"></i> Kembali
-    </button>
-  </div>
-</div>
+body.dark #search-input::placeholder {
+  color: #9ca3af;
+}
 
-<!-- Modal Order untuk Acara (WhatsApp & Email) -->
-<div id="order-event-modal" class="modal" aria-hidden="true" role="dialog" aria-modal="true" aria-labelledby="order-event-title">
-  <button class="modal-close-btn" data-modal-id="order-event-modal"><i class="fas fa-times"></i></button>
-  <h3 id="order-event-title" class="mb-3">Order untuk Acara</h3>
-  <div class="space-y-3">
-    <div>
-      <label for="order-name" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Nama Pemesan:</label>
-      <input type="text" id="order-name" class="w-full border px-3 py-2 rounded-lg mt-1" placeholder="Nama Anda" />
-    </div>
-    <div>
-      <label for="order-wa" class="block text-sm font-medium text-gray-700 dark:text-gray-300">No. WA:</label>
-      <input type="tel" id="order-wa" class="w-full border px-3 py-2 rounded-lg mt-1" placeholder="Contoh: 6281234567890" />
-    </div>
-    <div>
-      <label for="order-event-name" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Acara:</label>
-      <input type="text" id="order-event-name" class="w-full border px-3 py-2 rounded-lg mt-1" placeholder="Nama Acara (misal: Ulang Tahun, Rapat)" />
-    </div>
-    <div>
-      <label for="order-date" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Dipesan untuk Tanggal:</label>
-      <input type="date" id="order-date" class="w-full border px-3 py-2 rounded-lg mt-1" />
-    </div>
-    <div>
-      <label for="order-address" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Alamat Dituju:</label>
-      <textarea id="order-address" rows="3" class="w-full border px-3 py-2 rounded-lg mt-1" placeholder="Alamat lengkap pengiriman"></textarea>
-    </div>
-  </div>
-  <div class="flex flex-col gap-3 mt-4">
-    <button id="submit-order-event" class="flex-1 bg-orange-500 text-white py-2 rounded-xl font-semibold hover:bg-orange-600">
-      Kirim Pesanan
-    </button>
-    <button class="modal-back-btn" data-modal-id="order-event-modal">
-      <i class="fas fa-arrow-left"></i> Kembali
-    </button>
-  </div>
-</div>
+/* Coming Soon Banner Dark Mode */
+body.dark .bg-lime-300 {
+  background: #064e3b;
+}
 
-<!-- Modal Report Bug -->
-<div id="report-bug-modal" class="modal" aria-hidden="true" role="dialog" aria-modal="true" aria-labelledby="report-bug-title">
-  <button class="modal-close-btn" data-modal-id="report-bug-modal"><i class="fas fa-times"></i></button>
-  <h3 id="report-bug-title" class="mb-3">Report Bug</h3>
-  <div class="space-y-3">
-    <div>
-      <label for="bug-title" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Judul Bug:</label>
-      <input type="text" id="bug-title" class="w-full border px-3 py-2 rounded-lg mt-1" placeholder="Singkat dan jelas" />
-    </div>
-    <div>
-      <label for="bug-description" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Deskripsi Bug (maks 500 karakter):</label>
-      <textarea id="bug-description" rows="5" maxlength="500" class="w-full border px-3 py-2 rounded-lg mt-1" placeholder="Jelaskan bug yang Anda temukan"></textarea>
-      <p class="text-xs text-gray-500 text-right" id="bug-char-count">0/500</p>
-    </div>
-  </div>
-  <div class="flex flex-col gap-3 mt-4">
-    <button id="submit-report-bug" class="flex-1 bg-red-500 text-white py-2 rounded-xl font-semibold hover:bg-red-600">
-      Kirim Laporan
-    </button>
-    <button class="modal-back-btn" data-modal-id="report-bug-modal">
-      <i class="fas fa-arrow-left"></i> Kembali
-    </button>
-  </div>
-</div>
+body.dark .bg-lime-300 h2 {
+  color: #34d399;
+}
 
-<!-- New: Update Notification Modal -->
-<div id="update-modal" class="modal" aria-hidden="true" role="dialog" aria-modal="true" aria-labelledby="update-title">
-  <button class="modal-close-btn" data-modal-id="update-modal"><i class="fas fa-times"></i></button>
-  <div class="flex justify-between items-center mb-4">
-    <h3 id="update-title" class="mb-0">Pembaruan Terbaru!</h3>
-    <!-- Close button moved to modal-close-btn -->
-  </div>
-  <div id="update-content" class="space-y-4 max-h-80 overflow-y-auto mb-4">
-    <!-- Content will be dynamically loaded here -->
-  </div>
-  <div id="promo-content" class="bg-orange-100 border-l-4 border-orange-500 text-orange-700 p-4 rounded-lg dark:bg-orange-900 dark:border-orange-400 dark:text-orange-200">
-    <p class="font-semibold mb-2">🎉 Ada Promo Spesial!</p>
-    <p id="promo-text"></p>
-  </div>
-  <!-- Checkbox for "Don't show again for 10 minutes" -->
-  <div class="flex items-center mt-4">
-    <input type="checkbox" id="dont-show-again" class="mr-2">
-    <label for="dont-show-again" class="text-sm text-gray-600 dark:text-gray-300">Jangan tampilkan lagi selama 10 menit</label>
-  </div>
-  <div class="flex flex-col gap-3 mt-4">
-    <button class="modal-back-btn" data-modal-id="update-modal">
-      <i class="fas fa-arrow-left"></i> Kembali
-    </button>
-  </div>
-</div>
+body.dark .bg-lime-300 p {
+  background: #059669;
+  color: #ecfdf5;
+}
 
-<!-- Modal Detail Produk -->
-<div id="product-detail-modal" class="modal" aria-hidden="true" role="dialog" aria-modal="true" aria-labelledby="product-detail-title">
-  <button class="modal-close-btn" data-modal-id="product-detail-modal"><i class="fas fa-times"></i></button>
-  <h3 id="product-detail-title" class="mb-3"></h3>
-  <div class="product-detail-content">
-    <div class="swiper product-detail-swiper mb-4">
-      <div class="swiper-wrapper" id="product-detail-images">
-        <!-- Gambar akan dimuat di sini -->
-      </div>
-      <div class="swiper-button-prev product-detail-nav"></div>
-      <div class="swiper-button-next product-detail-nav"></div>
-      <!-- Thumbnail pagination -->
-      <div class="swiper-pagination product-detail-pagination"></div>
-    </div>
-    <p class="text-xs text-center text-orange-500 dark:text-orange-400 mb-2 product-img-enlarge-hint">
-      <i class="fas fa-search-plus mr-1"></i> Ketuk gambar untuk memperbesar
-    </p>
-    <p id="product-detail-description" class="text-sm text-gray-600 dark:text-gray-300 mb-4"></p>
-    <p class="font-semibold text-lg mb-4">Harga: <span id="product-detail-price">Rp 0</span></p>
+/* Category Active State */
+body.dark .category-card.active {
+  border: 3px solid rgba(255,255,255,0.8);
+}
 
-    <!-- Varian Produk (khusus Nasi Uduk & Nasi Kuning) -->
-    <div id="product-variants-container" class="mb-4 hidden">
-      <h4 class="font-semibold text-md mb-2">Pilih Varian:</h4>
-      <div id="product-variants-options" class="space-y-2">
-        <!-- Opsi varian akan dimuat di sini -->
-      </div>
-    </div>
+/* Payment Modal Buttons */
+.payment-btn {
+  width: 100%;
+  padding: 1rem 1.25rem;
+  border-radius: 1rem;
+  border: none;
+  font-weight: 600;
+  font-size: 1rem;
+  margin-bottom: 0.75rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.75rem;
+  transition: all 0.3s ease;
+}
 
-    <!-- Tambahan Topping (khusus Nasi Uduk & Nasi Kuning) -->
-    <div id="product-toppings-container" class="mb-4 hidden">
-      <h4 class="font-semibold text-md mb-2">Tambahan Topping:</h4>
-      <div id="product-toppings-options" class="space-y-2">
-        <!-- Opsi topping akan dimuat di sini -->
-      </div>
-    </div>
+.payment-btn.cash {
+  background: linear-gradient(135deg, #10b981, #059669);
+  color: white;
+  box-shadow: 0 4px 15px rgba(16, 185, 129, 0.4);
+}
 
-    <!-- Penyesuaian Kuantitas -->
-    <div class="flex items-center justify-center gap-4 mb-4">
-      <button id="detail-minus-btn" class="qty-btn minus-red">
-        <i class="fas fa-minus"></i>
-      </button>
-      <span id="detail-qty-display" class="text-xl font-bold min-w-[40px] text-center">1</span>
-      <button id="detail-plus-btn" class="qty-btn plus">
-        <i class="fas fa-plus"></i>
-      </button>
-    </div>
+.payment-btn.cash:hover {
+  background: linear-gradient(135deg, #059669, #047857);
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(16, 185, 129, 0.5); /* FIX: Reduced vertical offset */
+}
 
-    <div class="flex gap-3">
-      <button id="add-to-cart-detail-btn" class="flex-1 bg-orange-500 text-white py-2 rounded-xl font-semibold hover:bg-orange-600">
-        <i class="fas fa-shopping-cart mr-2"></i>Tambah ke Keranjang
-      </button>
-      <button id="add-to-wishlist-detail-btn" class="bg-pink-500 text-white px-4 rounded-xl hover:bg-pink-600">
-        <i class="fas fa-heart"></i>
-      </button>
-    </div>
-  </div>
-  
-  <!-- Produk Terkait/Rekomendasi di Modal Detail -->
-  <div id="related-products-modal-container" class="mt-6 pt-4 border-t border-gray-200 dark:border-gray-700">
-    <h4 class="font-semibold text-md mb-3">Produk Lain yang Mungkin Anda Suka</h4>
-    <div class="grid grid-cols-2 gap-3" id="related-products-modal-list">
-      <!-- Produk terkait akan dimuat di sini -->
-    </div>
-  </div>
-  <div class="flex flex-col gap-3 mt-4">
-    <button class="modal-back-btn" data-modal-id="product-detail-modal">
-      <i class="fas fa-arrow-left"></i> Kembali
-    </button>
-  </div>
-</div>
+.payment-btn.dana {
+  background: linear-gradient(135deg, #3b82f6, #2563eb);
+  color: white;
+  box-shadow: 0 4px 15px rgba(59, 130, 246, 0.4);
+}
 
-<!-- Fullscreen QR Enlarge Overlay -->
-<div id="qr-enlarge-overlay" class="qr-enlarge-overlay hidden" aria-hidden="true">
-  <button id="qr-enlarge-close" class="qr-enlarge-close" aria-label="Tutup">&times;</button>
-  <img id="qr-enlarge-img" src="" alt="QR Code diperbesar" class="qr-enlarge-img">
-  <p class="qr-enlarge-hint">Ketuk di luar gambar atau tombol ✕ untuk menutup</p>
-</div>
+.payment-btn.dana:hover {
+  background: linear-gradient(135deg, #2563eb, #1d4ed8);
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(59, 130, 246, 0.5); /* FIX: Reduced vertical offset */
+}
 
-<!-- Canvas for Dispersion Effect -->
-<canvas id="dispersion-canvas" style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: 1500; pointer-events: none; display: none;"></canvas>
+.payment-btn.transfer {
+  background: linear-gradient(135deg, #8b5cf6, #7c3aed);
+  color: white;
+  box-shadow: 0 4px 15px rgba(139, 92, 246, 0.4);
+}
 
-<!-- Tombol Back to Top -->
-<button id="back-to-top" class="back-to-top-btn">
-  <i class="fas fa-arrow-up"></i>
-</button>
+.payment-btn.transfer:hover {
+  background: linear-gradient(135deg, #7c3aed, #6d28d9);
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(139, 92, 246, 0.5); /* FIX: Changed from 66px to 6px */
+}
 
-<script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
-<script src="main.js"></script>
+.payment-btn.qris {
+  background: linear-gradient(135deg, #ef4444, #dc2626);
+  color: white;
+  box-shadow: 0 4px 15px rgba(239, 68, 68, 0.4);
+}
 
-</body>
-</html>
+.payment-btn.qris:hover {
+  background: linear-gradient(135deg, #dc2626, #b91c1c);
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(239, 68, 68, 0.5);
+}
+
+/* Bank Sinarmas - Merah */
+.payment-btn.bank-sinarmas {
+  background: linear-gradient(135deg, #ef4444, #dc2626);
+  color: white;
+  box-shadow: 0 4px 15px rgba(239, 68, 68, 0.4);
+}
+
+.payment-btn.bank-sinarmas:hover {
+  background: linear-gradient(135deg, #dc2626, #b91c1c);
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(239, 68, 68, 0.5);
+}
+
+/* Bank BCA - Biru tua elegan */
+.payment-btn.bank-bca {
+  background: linear-gradient(135deg, #1e3a5f, #0f2744);
+  color: white;
+  box-shadow: 0 4px 15px rgba(30, 58, 95, 0.4);
+}
+
+.payment-btn.bank-bca:hover {
+  background: linear-gradient(135deg, #0f2744, #0a1a2e);
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(30, 58, 95, 0.5);
+}
+
+/* Bank BNI - Oranye elegan */
+.payment-btn.bank-bni {
+  background: linear-gradient(135deg, #f97316, #ea580c);
+  color: white;
+  box-shadow: 0 4px 15px rgba(249, 115, 22, 0.4);
+}
+
+.payment-btn.bank-bni:hover {
+  background: linear-gradient(135deg, #ea580c, #c2410c);
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(249, 115, 22, 0.5);
+}
+
+/* Kategori */
+.category-card {
+  border-radius: 1rem;
+  color: white;
+  padding: 1.2rem;
+  font-weight: 600;
+  text-align: center;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  border: 2px solid transparent;
+  position: relative;
+  overflow: hidden;
+  background-position: center;
+  background-size: 200% auto;
+}
+
+/* Hover effect untuk semua kategori */
+.category-card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+}
+
+/* Kategori "Semua" dengan gradient baru */
+.category-card[data-kategori="all"] {
+  background-image: linear-gradient(45deg, #3b82f6, #2563eb);
+  color: #fff;
+}
+
+.category-card[data-kategori="all"]:hover {
+  background-position: right center;
+  box-shadow: 0 10px 20px rgba(59, 130, 246, 0.2);
+}
+
+.category-card[data-kategori="all"].active {
+  border: 3px solid #1d4ed8;
+  box-shadow: 0 8px 25px rgba(59, 130, 246, 0.3);
+}
+
+/* Karbohidrat kategori */
+.category-card[data-kategori="Karbohidrat"] {
+  background-image: linear-gradient(45deg, #22c55e, #16a34a);
+}
+
+.category-card[data-kategori="Karbohidrat"]:hover {
+  box-shadow: 0 10px 20px rgba(34, 197, 94, 0.2);
+}
+
+.category-card[data-kategori="Karbohidrat"].active {
+  border: 3px solid #15803d;
+  box-shadow: 0 8px 25px rgba(34, 197, 94, 0.3);
+}
+
+/* Asin kategori (sebelumnya Gorengan) */
+.category-card[data-kategori="Asin"] {
+  background-image: linear-gradient(45deg, #eab308, #ca8a04);
+}
+
+.category-card[data-kategori="Asin"]:hover {
+  box-shadow: 0 10px 20px rgba(234, 179, 8, 0.2);
+}
+
+.category-card[data-kategori="Asin"].active {
+  border: 3px solid #a16207;
+  box-shadow: 0 8px 25px rgba(234, 179, 8, 0.3);
+}
+
+/* Manis kategori */
+.category-card[data-kategori="Manis"] {
+  background-image: linear-gradient(45deg, #ec4899, #db2777);
+}
+
+.category-card[data-kategori="Manis"]:hover {
+  box-shadow: 0 10px 20px rgba(236, 72, 153, 0.2);
+}
+
+/* Active state untuk semua kategori */
+.category-card.active {
+  transform: scale(1.05);
+  background-position: right center;
+}
+
+/* Notifikasi - FIX: Hidden by default */
+.notif {
+  position: fixed;
+  top: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+  background-color: #4ade80;
+  color: white;
+  padding: 10px 20px;
+  border-radius: 9999px;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+  z-index: 1200;
+  opacity: 0;
+  pointer-events: none;
+  display: none; /* FIX: Initially hidden */
+}
+
+.copied-badge, .sent-badge {
+  position: fixed;
+  left: 50%;
+  transform: translateX(-50%);
+  padding: 8px 14px;
+  border-radius: 999px;
+  color: white;
+  font-size: 13px;
+  z-index: 1300;
+  opacity: 0;
+  pointer-events: none;
+  display: none; /* FIX: Initially hidden */
+}
+
+.copied-badge {
+  top: 88px;
+  background: rgba(17,24,39,0.92);
+}
+
+.sent-badge {
+  top: 130px;
+  background: rgba(59,130,246,0.95);
+}
+
+/* Overlay */
+#overlay {
+  background: rgba(0,0,0,0.5);
+  position: fixed;
+  inset: 0;
+  opacity: 0;
+  pointer-events: none;
+  z-index: 999;
+  transition: opacity 0.25s ease;
+  display: none;
+}
+
+#overlay.show {
+  display: block;
+  pointer-events: auto;
+  opacity: 1;
+}
+
+/* Modal Base Styles */
+.modal {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background: white;
+  border-radius: 1.5rem;
+  padding: 1.25rem 1.5rem;
+  box-shadow: 0 25px 50px -12px rgba(0,0,0,0.25);
+  width: 90vw;
+  max-width: 400px;
+  opacity: 0;
+  z-index: 1000;
+  display: none;
+  outline: none;
+  /* Center + ruang aman dari taskbar */
+  max-height: 80vh;
+  overflow-y: auto;
+  margin: 0;
+}
+
+.modal.show {
+  display: block;
+  opacity: 1;
+  transform: translate(-50%, -50%);
+}
+
+.modal h3 {
+  font-weight: 600;
+  margin-bottom: 1rem;
+}
+
+/* Buttons style */
+button {
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+/* Payment Modal Buttons - ENHANCED */
+.payment-btn {
+  width: 100%;
+  padding: 1rem 1.25rem;
+  border-radius: 1rem;
+  border: none;
+  font-weight: 600;
+  font-size: 1rem;
+  margin-bottom: 0.75rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.75rem;
+  transition: all 0.3s ease;
+  position: relative;
+  overflow: hidden;
+}
+
+.payment-btn::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+  transition: left 0.5s;
+}
+
+.payment-btn:hover::before {
+  left: 100%;
+}
+
+.payment-btn.cash {
+  background: linear-gradient(135deg, #10b981, #059669);
+  color: white;
+  box-shadow: 0 4px 15px rgba(16, 185, 129, 0.4);
+}
+
+.payment-btn.cash:hover {
+  background: linear-gradient(135deg, #059669, #047857);
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(16, 185, 129, 0.5); /* FIX: Reduced vertical offset */
+}
+
+.payment-btn.dana {
+  background: linear-gradient(135deg, #3b82f6, #2563eb);
+  color: white;
+  box-shadow: 0 4px 15px rgba(59, 130, 246, 0.4);
+}
+
+.payment-btn.dana:hover {
+  background: linear-gradient(135deg, #2563eb, #1d4ed8);
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(59, 130, 246, 0.5); /* FIX: Reduced vertical offset */
+}
+
+.payment-btn.transfer {
+  background: linear-gradient(135deg, #8b5cf6, #7c3aed);
+  color: white;
+  box-shadow: 0 4px 15px rgba(139, 92, 246, 0.4);
+}
+
+.payment-btn.transfer:hover {
+  background: linear-gradient(135deg, #7c3aed, #6d28d9);
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(139, 92, 246, 0.5); /* FIX: Changed from 66px to 6px */
+}
+
+.payment-btn.qris {
+  background: linear-gradient(135deg, #ef4444, #dc2626);
+  color: white;
+  box-shadow: 0 4px 15px rgba(239, 68, 68, 0.4);
+}
+
+.payment-btn.qris:hover {
+  background: linear-gradient(135deg, #dc2626, #b91c1c);
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(239, 68, 68, 0.5);
+}
+
+/* Bank Sinarmas - Merah */
+.payment-btn.bank-sinarmas {
+  background: linear-gradient(135deg, #ef4444, #dc2626);
+  color: white;
+  box-shadow: 0 4px 15px rgba(239, 68, 68, 0.4);
+}
+
+.payment-btn.bank-sinarmas:hover {
+  background: linear-gradient(135deg, #dc2626, #b91c1c);
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(239, 68, 68, 0.5);
+}
+
+/* Bank BCA - Biru tua elegan */
+.payment-btn.bank-bca {
+  background: linear-gradient(135deg, #1e3a5f, #0f2744);
+  color: white;
+  box-shadow: 0 4px 15px rgba(30, 58, 95, 0.4);
+}
+
+.payment-btn.bank-bca:hover {
+  background: linear-gradient(135deg, #0f2744, #0a1a2e);
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(30, 58, 95, 0.5);
+}
+
+/* Bank BNI - Oranye elegan */
+.payment-btn.bank-bni {
+  background: linear-gradient(135deg, #f97316, #ea580c);
+  color: white;
+  box-shadow: 0 4px 15px rgba(249, 115, 22, 0.4);
+}
+
+.payment-btn.bank-bni:hover {
+  background: linear-gradient(135deg, #ea580c, #c2410c);
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(249, 115, 22, 0.5);
+}
+
+/* Icon colors for light/dark mode */
+.fas {
+  transition: color 0.3s ease;
+}
+
+body:not(.dark) .fas {
+  color: #1f2937; /* gray-800 for light mode */
+}
+
+body:not(.dark) .product-card {
+  background-color: transparent; /* Changed to transparent */
+  box-shadow: 0 1px 2px rgba(17,24,39,0.05);
+}
+
+body.dark .product-card:hover {
+  box-shadow:
+    0 0 0 2px rgba(255,255,255,0.06) inset,
+    0 0 12px rgba(255,255,255,0.35),
+    0 0 24px rgba(255,255,255,0.25);
+  transform: translateY(-2px);
+  transition: box-shadow 0.3s ease, transform 0.3s ease;
+}
+body.dark .fas {
+  color: #e2e8f0; /* gray-200 for dark mode */
+}
+
+body.dark .nav-link {
+  color: #e2e8f0;
+}
+
+body.dark .nav-link:hover {
+  color: #f97316;
+}
+
+/* Wishlist icon specific colors */
+body:not(.dark) #wishlist-btn .fas.fa-heart {
+  color: #ec4899; /* pink-500 for light mode */
+}
+
+body.dark #wishlist-btn .fas.fa-heart {
+  color: #fff; /* white for dark mode */
+}
+
+#checkout-btn {
+  width: 100%;
+  background: #f97316;
+  color: white;
+  border: none;
+  padding: 0.75rem;
+  font-weight: 600;
+  border-radius: 0.75rem;
+}
+
+#checkout-btn:hover {
+  background: #ea580c;
+}
+
+/* Cart edit buttons */
+.qty-btn {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  border: none;
+  font-weight: bold;
+  font-size: 14px;
+  cursor: pointer;
+  transition: all 0.2s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.qty-btn:disabled {
+  cursor: not-allowed;
+  opacity: 0.5;
+}
+
+.qty-btn.plus {
+  background: #3b82f6;
+  color: white;
+}
+
+.qty-btn.plus:hover:not(:disabled) {
+  background: #2563eb;
+}
+
+.qty-btn.minus-red {
+  background: #ef4444;
+  color: white;
+}
+
+.qty-btn.minus-red:hover:not(:disabled) {
+  background: #dc2626;
+}
+
+.qty-btn.minus-gray {
+  background: #d1d5db;
+  color: #9ca3af;
+}
+
+/* Product card styles - Enhanced MacOS Glassmorphism */
+.product-card {
+  background: rgba(255, 255, 255, 0.85);
+  backdrop-filter: blur(12px) saturate(150%);
+  -webkit-backdrop-filter: blur(12px) saturate(150%);
+  border: 1px solid rgba(255, 255, 255, 0.25);
+  border-radius: 1.25rem;
+  padding: 1.25rem;
+  box-shadow:
+    0 4px 16px rgba(0, 0, 0, 0.06),
+    0 1px 4px rgba(0, 0, 0, 0.03);
+  transition: all 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
+  position: relative;
+  overflow: hidden;
+  min-height: 280px;
+  margin-top: 0;     /* pastikan tidak ada margin tambahan */
+  display: flex;
+  flex-direction: column;
+}
+
+.product-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(
+    135deg,
+    rgba(255, 255, 255, 0.08) 0%,
+    rgba(255, 255, 255, 0.02) 100%
+  );
+  border-radius: 1.25rem;
+  pointer-events: none;
+  opacity: 1;
+  transition: opacity 0.35s ease;
+}
+
+#menu-section h3 {
+  margin-bottom: 0.75rem !important; /* 12px, konsisten */
+}
+
+body.dark #menu-section h3 {
+  margin-bottom: 0.75rem !important; /* samakan, cegah gap berlebihan */
+}
+
+
+/* Dark mode product cards */
+body.dark .product-card {
+  background: rgba(51, 65, 85, 0.75);
+  min-height: 280px;
+  margin-top: 0;     /* pastikan tidak ada margin tambahan */
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  box-shadow:
+    0 1px 4px rgba(0, 0, 0, 0.15);
+  padding: 1rem !important; /* default 1.25rem → diperkecil biar rapat */
+}
+
+body.dark .product-card::before {
+  background: linear-gradient(
+    135deg,
+    rgba(255, 255, 255, 0.03) 0%,
+    rgba(255, 255, 255, 0.01) 100%
+  );
+}
+
+/* Hover effects - consistent positioning */
+.product-card:hover {
+  transform: translateY(-2px);
+  /* Light mode hover: dark shadow */
+  box-shadow:
+    0 8px 25px rgba(0, 0, 0, 0.2),
+    0 3px 8px rgba(0, 0, 0, 0.1);
+}
+
+body.dark .product-card:hover {
+  /* Dark mode hover: light shadow */
+  box-shadow:
+    0 8px 25px rgba(255, 255, 255, 0.15),
+    0 3px 8px rgba(255, 255, 255, 0.08);
+}
+
+/* Copy button styles */
+.copy-btn {
+  background: #f3f4f6;
+  border: 1px solid #d1d5db;
+  color: #374151;
+  padding: 0.5rem;
+  border-radius: 0.5rem;
+  cursor: pointer;
+  transition: all 0.2s;
+  font-size: 0.875rem;
+}
+
+.copy-btn:hover {
+  background: #e5e7eb;
+}
+
+/* Dark Mode Styles */
+body.dark {
+  background: #1a2332;
+  color: #e2e8f0;
+}
+
+body.dark header {
+  background: transparent; /* 0.35 = tingkat transparansi */
+  backdrop-filter: blur(18px) saturate(180%);
+  -webkit-backdrop-filter: blur(18px) saturate(180%);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+body.dark .modal {
+  background: #334155;
+  color: #e2e8f0;
+}
+
+body.dark .product-card,
+body.dark .bg-white {
+  background: #475569 !important;
+  color: #e2e8f0;
+}
+
+body.dark .category-card {
+  color: #fff;
+}
+
+body.dark .category-card[data-kategori="all"] {
+  background-image: linear-gradient(45deg, #2563eb, #1d4ed8);
+}
+
+body.dark .category-card[data-kategori="all"].active {
+  border: 3px solid #60a5fa;
+  box-shadow: 0 8px 25px rgba(59, 130, 246, 0.4);
+}
+
+body.dark .category-card[data-kategori="Karbohidrat"] {
+  background-image: linear-gradient(45deg, #16a34a, #15803d);
+}
+
+body.dark .category-card[data-kategori="Karbohidrat"].active {
+  border: 3px solid #4ade80;
+  box-shadow: 0 8px 25px rgba(34, 197, 94, 0.4);
+}
+
+body.dark .category-card[data-kategori="Asin"] {
+  background-image: linear-gradient(45deg, #ca8a04, #a16207);
+}
+
+body.dark .category-card[data-kategori="Asin"].active {
+  border: 3px solid #fbbf24;
+  box-shadow: 0 8px 25px rgba(234, 179, 8, 0.4);
+}
+
+body.dark .category-card[data-kategori="Manis"] {
+  background-image: linear-gradient(45deg, #db2777, #be185d);
+}
+
+body.dark .category-card[data-kategori="Manis"].active {
+  border: 3px solid #f472b6;
+  box-shadow: 0 8px 25px rgba(236, 72, 153, 0.4);
+}
+
+/* Hover effects for dark mode */
+body.dark .category-card:hover {
+  box-shadow: 0 10px 20px rgba(0,0,0,0.3);
+}
+
+/* Additional animation for smooth transitions */
+.category-card {
+  animation: fadeIn 0.5s ease-out;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Soft transition for all effects */
+.category-card {
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+body.dark .bg-gray-50,
+body.dark .bg-gray-100 {
+  background: #475569 !important;
+  color: #e2e8f0;
+}
+
+body.dark .text-gray-500,
+body.dark .text-gray-600 {
+  color: #94a3b8 !important;
+}
+
+body.dark .text-gray-800,
+body.dark .text-gray-900 {
+  color: #e2e8f0 !important;
+}
+
+body.dark .bg-gray-200 {
+  background: #64748b !important;
+  color: #e2e8f0 !important;
+}
+
+body.dark .border {
+  border-color: #64748b !important;
+}
+
+body.dark .info-left {
+  color: #e2e8f0 !important;
+}
+
+body.dark .copy-btn {
+  background: #64748b;
+  border-color: #475569;
+  color: #e2e8f0;
+}
+
+body.dark .copy-btn:hover {
+  background: #475569;
+}
+
+/* Contrast improvements */
+body.dark .text-orange-500 {
+  color: #fb923c !important; /* orange-400 for better contrast in dark mode */
+}
+
+body.dark .bg-orange-500 {
+  background-color: #fb923c !important;
+}
+
+/* Wishlist button style */
+.btn-wishlist {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  justify-content: center;
+  padding: 0.5rem 1rem;
+  border-radius: 9999px;
+  font-size: 0.875rem;
+  transition: all 0.3s ease;
+  border: 2px solid transparent; /* Add transparent border for animation */
+}
+
+.btn-wishlist:not(.wishlist-active) {
+  background-color: transparent;
+  color: #ec4899;
+}
+
+.btn-wishlist.wishlist-active {
+  background-color: #ec4899;
+  color: white;
+}
+
+body.dark .btn-wishlist:not(.wishlist-active) {
+  color: #fff;
+}
+
+body.dark .btn-wishlist.wishlist-active {
+  background-color: #be185d;
+}
+
+/* Hover effect for wishlist button */
+.btn-wishlist:hover {
+  border-color: #ec4899; /* Pink border on hover for light mode */
+  box-shadow: 0 0 0 4px rgba(236, 72, 153, 0.2); /* Soft glow */
+}
+
+body.dark .btn-wishlist:hover {
+  border-color: #fff; /* White border on hover for dark mode */
+  box-shadow: 0 0 0 4px rgba(255, 255, 255, 0.2); /* Soft glow */
+}
+
+/* Info content styles */
+.info-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.75rem;
+  background: #f9fafb;
+  border-radius: 0.5rem;
+  margin-bottom: 0.5rem;
+}
+
+body.dark .info-item {
+  background: #475569;
+}
+
+.info-left {
+  font-weight: 500;
+  color: #374151;
+}
+
+.info-right {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-family: monospace;
+  font-weight: 600;
+}
+
+
+/* SOLUSI LENGKAP UNTUK SWIPER BANNER "COMING SOON" */
+
+/* Fix container swiper agar tidak bocor */
+.banner-section {
+  width: 100%;
+  max-width: 100%;
+  margin: 2rem auto;
+  padding: 0 1.5rem;
+  overflow: hidden; /* Penting untuk mencegah bocor */
+  position: relative;
+}
+
+/* Swiper container fix */
+.swiper {
+  width: 100%;
+  height: 100%; /* Tinggi tetap agar konsisten */
+  border-radius: 1.5rem;
+  overflow: hidden; /* Mencegah slide bocor keluar */
+  position: relative;
+}
+
+.mySwiper {
+  margin: 0; /* Remove margins */
+  padding: 0; /* Remove padding */
+}
+
+.swiper-wrapper {
+  display: flex;
+  align-items: center;
+}
+
+.swiper-slide {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  padding: 3rem 2rem;
+  border-radius: 1.5rem;
+  text-align: center;
+  height: 100%;
+  width: 100%; /* Pastikan slide mengambil lebar penuh */
+  flex-shrink: 0; /* Mencegah slide menyusut */
+  transition: background-color 0.3s ease;
+}
+
+.swiper-slide h2 {
+  font-size: 2.5rem;
+  font-weight: bold;
+  margin-bottom: 1rem;
+  transition: color 0.3s ease;
+}
+
+.swiper-slide p {
+  font-size: 1.1rem;
+  padding: 0.6rem 1.5rem;
+  border-radius: 2rem;
+  font-weight: 600;
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+/* Navigation Arrows - Desain yang bagus */
+.swiper-button-next,
+.swiper-button-prev {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 50px;
+  height: 50px;
+  margin-top: 0;
+  /* Mengubah background menjadi transparan */
+  background: rgba(255, 255, 255, 0.1); /* Lebih transparan */
+  border-radius: 50%;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  transition: all 0.3s ease;
+  z-index: 10;
+}
+
+.swiper-button-next:hover,
+.swiper-button-prev:hover {
+  background: rgba(255, 255, 255, 0.2); /* Sedikit lebih solid saat hover */
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
+  transform: translateY(-50%) scale(1.1);
+}
+
+.swiper-button-next {
+  right: 20px;
+}
+
+.swiper-button-prev {
+  left: 20px;
+}
+
+/* Custom Arrow Icons */
+.swiper-button-next::after,
+.swiper-button-prev::after {
+  font-family: 'Font Awesome 6 Free';
+  font-weight: 900;
+  font-size: 18px;
+  color: #374151;
+  transition: color 0.3s ease;
+}
+
+.swiper-button-next::after {
+  content: '\f054'; /* fa-chevron-right */
+}
+
+.swiper-button-prev::after {
+  content: '\f053'; /* fa-chevron-left */
+}
+
+.swiper-button-next:hover::after,
+.swiper-button-prev:hover::after {
+  color: #f97316; /* Orange saat hover */
+}
+
+/* Dark mode untuk navigation */
+body.dark .swiper-button-next,
+body.dark .swiper-button-prev {
+  background: rgba(31, 41, 55, 0.1); /* Lebih transparan di dark mode */
+  border: 1px solid rgba(156, 163, 175, 0.2);
+}
+
+body.dark .swiper-button-next:hover,
+body.dark .swiper-button-prev:hover {
+  background: rgba(31, 41, 55, 0.2); /* Sedikit lebih solid saat hover di dark mode */
+}
+
+body.dark .swiper-button-next::after,
+body.dark .swiper-button-prev::after {
+  color: #f3f4f6;
+}
+
+body.dark .swiper-button-next:hover::after,
+body.dark .swiper-button-prev:hover::after {
+  color: #f97316;
+}
+
+/* Pagination bullets styling yang lebih bagus */
+.swiper-pagination {
+  bottom: 20px !important;
+  text-align: center;
+}
+
+.swiper-pagination-bullet {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.5);
+  opacity: 1;
+  margin: 0 6px;
+  transition: all 0.3s ease;
+  border: 2px solid transparent;
+}
+
+.swiper-pagination-bullet-active {
+  background: #f97316;
+  border: 2px solid rgba(255, 255, 255, 0.8);
+  transform: scale(1.2);
+}
+
+/* Dark mode pagination */
+body.dark .swiper-pagination-bullet {
+  background: rgba(156, 163, 175, 0.5);
+}
+
+body.dark .swiper-pagination-bullet-active {
+  background: #f97316;
+  border: 2px solid rgba(31, 41, 55, 0.8);
+}
+
+/* Light mode banner colors - Fix overflow */
+.swiper-slide.bg-lime-300 {
+  background-color: #a7f3d0;
+}
+.swiper-slide.bg-teal-300 {
+  background-color: #99f6e4;
+}
+.swiper-slide.bg-orange-300 {
+  background-color: #fed7aa;
+}
+
+.swiper-slide h2 {
+  color: #374151;
+}
+
+.swiper-slide p {
+  background-color: white;
+  color: #10b981;
+}
+
+/* Dark Mode Banner Colors */
+body.dark .bg-lime-300 {
+  background: #064e3b !important;
+}
+
+body.dark .bg-lime-300 h2 {
+  color: #34d399 !important;
+}
+
+body.dark .bg-lime-300 p {
+  background: #059669 !important;
+  color: #ecfdf5 !important;
+}
+
+body.dark .bg-teal-300 {
+  background: #0f766e !important;
+}
+
+body.dark .bg-teal-300 h2 {
+  color: #5eead4 !important;
+}
+
+body.dark .bg-teal-300 p {
+  background: #0d9488 !important;
+  color: #ecfdf5 !important;
+}
+
+body.dark .bg-orange-300 {
+  background: #9a3412 !important;
+}
+
+body.dark .bg-orange-300 h2 {
+  color: #fdba74 !important;
+}
+
+body.dark .bg-orange-300 p {
+  background: #c2410c !important;
+  color: #ecf5 !important;
+}
+
+/* Responsive untuk mobile */
+@media (max-width: 768px) {
+  .swiper {
+    height: 250px;
+  }
+
+  .swiper-slide h2 {
+    font-size: 2rem;
+  }
+
+  .swiper-button-next,
+  .swiper-button-prev {
+    width: 40px;
+    height: 40px;
+  }
+
+  .swiper-button-next::after,
+  .swiper-button-prev::after {
+    font-size: 14px;
+  }
+
+  .swiper-button-next {
+    right: 10px;
+  }
+
+  .swiper-button-prev {
+    left: 10px;
+  }
+}
+
+.copy-btn-inline {
+  background: #f3f4f6;
+  border: 1px solid #d1d5db;
+  color: #374151;
+  padding: 0.25rem 0.5rem;
+  border-radius: 0.375rem;
+  font-size: 0.75rem;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+.copy-btn-inline:hover {
+  background: #e5e7eb;
+}
+body.dark .copy-btn-inline {
+  background: #64748b;
+  border-color: #475569;
+  color: #e2e8f0;
+}
+body.dark .copy-btn-inline:hover {
+  background: #475569;
+}
+
+/* Light mode: kontainer menu transparan */
+body:not(.dark) #menu-container {
+  background-color: transparent;
+  padding: 0;
+  border-radius: 0;
+  margin-top: -8px !important; /* tarik grid lebih dekat ke judul */
+  padding-top: 0 !important;
+}
+
+body:not(.dark) #menu-container .product-card {
+  background: rgba(255, 255, 255, 0.25);
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  box-shadow: 0 8px 32px rgba(0,0,0,0.1);
+}
+
+/* Mini Search Bar Trigger */
+.search-trigger {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  background-color: #f1f5f9;
+  border: 1px solid #d1d5db; /* light mode background */
+  color: #6b7280;
+  padding: 0.4rem 0.8rem;
+  border-radius: 9999px;
+  font-size: 0.85rem;
+  cursor: pointer;
+  /* FIX: Remove transform from here to prevent layout shift */
+  transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease;
+  min-width: 200px; /* Lebar pendek */
+  flex-grow: 1; /* Memungkinkan untuk tumbuh di tengah */
+  max-width: 400px; /* Batasi lebar maksimum */
+  justify-content: center; /* Pusatkan teks di dalamnya */
+}
+
+/* FIX: Add a wrapper for the scale animation to prevent layout shift */
+.search-trigger-wrapper {
+  display: inline-block; /* Or block, depending on parent flex/grid */
+  transition: transform 0.3s ease; /* Apply transform here */
+}
+
+.search-trigger-wrapper:hover {
+  transform: scale(1.01); /* Apply scale here */
+}
+
+
+.search-trigger i {
+  font-size: 0.9rem;
+}
+
+body.dark .search-trigger {
+  background-color: #374151; /* dark mode background */
+  color: #d1d5db;
+  border-color: #4b5563;
+}
+
+.search-trigger:hover {
+  background-color: #F1F0E4;
+  color: #2a313e;
+  border: 2px solid #2a313e;
+  box-shadow: 0 0 10px rgba(0,0,0,0.3);
+  /* FIX: Remove transform from here */
+}
+
+body.dark .search-trigger:hover {
+  background-color: #0E2148;
+  color: #EEEEEE;
+  border: 2px solid #58A0C8;
+  box-shadow: 0 0 10px rgba(10,20,10,0.3);
+  /* FIX: Remove transform from here */
+}
+
+/* Tombol hamburger hanya muncul di <768px */
+.hamburger {
+  display: none;
+  flex-direction: column;
+  justify-content: space-between;
+  width: 24px;
+  height: 18px;
+  cursor: pointer;
+  position: relative; /* Added for X animation */
+  z-index: 1100; /* Above mobile menu overlay */
+}
+.hamburger span {
+  display: block;
+  height: 3px;
+  background: #1f2937;
+  border-radius: 2px;
+  transition: all 0.3s ease;
+}
+body.dark .hamburger span {
+  background: #f97316; /* Ikut warna body dark mode */
+}
+
+/* Hamburger X animation */
+.hamburger.open span:nth-child(1) {
+  transform: translateY(7.5px) rotate(45deg);
+}
+.hamburger.open span:nth-child(2) {
+  opacity: 0;
+}
+.hamburger.open span:nth-child(3) {
+  transform: translateY(-7.5px) rotate(-45deg);
+}
+
+/* Specific breakpoints for hamburger and header elements */
+/* Default: Desktop (>= 1024px) */
+.header-nav-desktop { display: flex; gap: 1.5rem; } /* Added gap for spacing */
+.wishlist-desktop { display: block; }
+.dark-mode-desktop { display: block; }
+.cart-desktop { display: block; }
+.hamburger { display: none; }
+.logo-desktop { display: flex; }
+.search-trigger span { display: inline; } /* Teks search trigger terlihat */
+.search-trigger {
+  min-width: 200px;
+  max-width: 400px;
+  padding: 0.4rem 0.8rem;
+  font-size: 0.85rem;
+}
+.search-trigger i { font-size: 0.9rem; }
+.search-container {
+  flex-grow: 1;
+  justify-content: center;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+/* Tablet/Laptop Kecil (max-width: 1023px) */
+@media (max-width: 1023px) {
+  .header-nav-desktop { display: none; } /* Navigasi masuk hamburger */
+  .hamburger { display: flex; } /* Hamburger muncul */
+  /* Elemen lain di header tetap terlihat */
+  .logo-desktop { display: flex; }
+  .wishlist-desktop { display: none !important; } /* Wishlist masuk hamburger */
+  .dark-mode-desktop { display: block; }
+  .cart-desktop { display: block; }
+  .search-trigger span { display: inline; }
+  .search-trigger {
+    min-width: 200px;
+    max-width: 400px;
+    padding: 0.4rem 0.8rem;
+    font-size: 0.85rem;
+  }
+  .search-trigger i { font-size: 0.9rem; }
+  .search-container {
+    flex-grow: 1;
+    justify-content: center;
+    margin-left: auto;
+    margin-right: auto;
+  }
+  /* Adjust header actions for smaller screens */
+  .header-actions-desktop {
+    gap: 0.75rem; /* Jarak antar item di kanan */
+    margin-left: auto; /* Dorong ke kanan */
+  }
+  .hamburger {
+    margin-left: 0.5rem; /* Sedikit jarak dari item sebelumnya */
+  }
+
+  /* REVISI: Tombol pesan di bawah tombol wishlist untuk layar <= 1023px */
+  .product-actions {
+    flex-direction: column; /* Stack buttons vertically */
+    align-items: stretch; /* Make buttons take full width */
+  }
+  .product-actions button {
+    width: 100%; /* Ensure buttons take full width */
+  }
+}
+
+/* Mobile Portrait (max-width: 519px) - Changed from 427px to 519px */
+@media (max-width: 519px) { /* New breakpoint for 520px */
+  .logo-desktop { display: flex !important; } /* Logo tetap ada */
+  .wishlist-desktop { display: none !important; } /* Pastikan wishlist tersembunyi */
+  .dark-mode-desktop { display: block !important; }
+  .cart-desktop { display: block !important; }
+
+  /* Search trigger menyesuaikan ukuran dan tanpa teks */
+  .search-trigger {
+    min-width: unset;
+    max-width: 150px; /* Lebih kecil */
+    padding: 0.3rem 0.6rem; /* Padding lebih kecil */
+    font-size: 0.75rem; /* Font lebih kecil */
+  }
+  .search-trigger i {
+    font-size: 0.8rem; /* Icon lebih kecil */
+  }
+  .search-trigger span {
+    display: none; /* Sembunyikan teks "Cari produk anda..." */
+  }
+  .search-container {
+    flex-grow: 1;
+    justify-content: flex-start; /* Rata kiri */
+    margin-left: 0;
+    margin-right: 0.5rem;
+  }
+  .header-actions-desktop {
+    gap: 0.5rem; /* Jarak antar item lebih kecil */
+  }
+}
+
+
+/* Mobile menu overlay */
+.mobile-menu {
+  display: none;
+  position: fixed;
+  top: 60px; /* tinggi header */
+  left: 0;
+  width: 100%;
+  background: white;
+  z-index: 1000;
+  border-top: 1px solid #e5e7eb;
+  padding-bottom: 1rem; /* Tambahkan padding bawah */
+  transform: translateY(-100%); /* Start off-screen */
+  transition: transform 0.3s ease-out;
+}
+.mobile-menu.open {
+  transform: translateY(0); /* Slide in */
+}
+body.dark .mobile-menu {
+  background: #334155;
+  border-color: #475569;
+}
+
+/* Menu items */
+.mobile-menu .menu-item {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.75rem 1rem;
+  cursor: pointer;
+  border-bottom: 1px solid #e5e7eb;
+  transition: background 0.3s ease;
+}
+.mobile-menu .menu-item:last-child { border-bottom: none; }
+
+/* Hover efek kebalikan */
+body:not(.dark) .mobile-menu .menu-item:hover {
+  background: #1f2937; /* gelap untuk light mode */
+  color: white;
+}
+body:not(.dark) .mobile-menu .menu-item:hover i {
+  color: white;
+}
+
+body.dark .mobile-menu .menu-item:hover {
+  background: #f3f4f6; /* terang untuk dark mode */
+  color: #1f2937;
+}
+body.dark .mobile-menu .menu-item:hover i {
+  color: #1f2937;
+}
+
+@media (max-width: 767px) {
+  .header-actions {
+    opacity: 0;
+    visibility: hidden;
+    transform: translateY(-10px);
+    transition: opacity 0.25s ease, transform 0.25s ease;
+    position: absolute;
+    pointer-events: none;
+  }
+}
+@media (min-width: 768px) {
+  .header-actions {
+    opacity: 1;
+    visibility: visible;
+    transform: translateY(0);
+    transition: opacity 0.25s ease, transform 0.25s ease;
+    position: static;
+    pointer-events: auto;
+  }
+}
+
+/* Grid Daftar Menu - Glassmorphism */
+.menu-grid {
+  border-radius: 1rem;
+  padding: 1rem;
+}
+
+/* Contact */
+#contact-section {
+  background: transparent !important; /* Gunakan !important jika ada konflik */
+  box-shadow: none !important; /* Jika ada shadow yang tidak diinginkan */
+  border: none !important; /* Jika ada border yang tidak diinginkan */
+}
+
+/* New styles for contact section */
+.contact-card {
+  background: rgba(255, 255, 255, 0.85);
+  backdrop-filter: blur(12px) saturate(150%);
+  -webkit-backdrop-filter: blur(12px) saturate(150%);
+  border: 1px solid rgba(255, 255, 255, 0.25);
+  border-radius: 1.25rem;
+  padding: 1.5rem;
+  box-shadow: 0 1px 16px rgba(0, 0, 0, 0.3);
+  transition: all 0.3s ease;
+}
+
+.contact-card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 3px 25px rgba(0, 0, 0, 0.2);
+}
+
+body.dark .contact-card {
+  background: rgba(51, 65, 85, 0.75);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.25);
+}
+
+body.dark .contact-card:hover {
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.35);
+}
+
+.contact-button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.75rem;
+  padding: 0.75rem 1.25rem;
+  border-radius: 0.75rem;
+  font-weight: 600;
+  transition: all 0.3s ease;
+  width: 100%;
+}
+
+.contact-button.whatsapp {
+  background: linear-gradient(135deg, #25d366, #1da851);
+  color: white;
+  box-shadow: 0 4px 15px rgba(37, 211, 102, 0.4);
+}
+
+.contact-button.whatsapp:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(37, 211, 102, 0.5);
+}
+
+.contact-button.email {
+  background: linear-gradient(135deg, #3b82f6, #2563eb);
+  color: white;
+  box-shadow: 0 4px 15px rgba(59, 130, 246, 0.4);
+}
+
+.contact-button.email:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(59, 130, 246, 0.5);
+}
+
+.contact-button.request-design {
+  background: linear-gradient(135deg, #8b5cf6, #7c3aed);
+  color: white;
+  box-shadow: 0 4px 15px rgba(139, 92, 246, 0.4);
+}
+
+.contact-button.request-design:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(139, 92, 246, 0.5);
+}
+
+.footer-text {
+  font-size: 0.875rem;
+  color: #6b7280;
+}
+
+body.dark .footer-text {
+  color: #9ca3af;
+}
+
+/* Dropdown for contact buttons */
+.contact-dropdown {
+  position: relative;
+  width: 100%; /* Ensure it takes full width of its parent */
+}
+
+/* --- START: PERBAIKAN DROPDOWN EMAIL --- */
+.contact-dropdown-content {
+  display: none; /* Default hidden */
+  position: fixed; /* Change to fixed for overlay behavior */
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%); /* Center the dropdown */
+  background-color: #f9fafb; /* Light mode background */
+  width: 90vw; /* Take 90% of viewport width */
+  max-width: 300px; /* Max width for larger screens */
+  box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+  z-index: 1001; /* Higher than overlay (999) and modals (1000) */
+  border-radius: 0.75rem; /* Match button border-radius */
+  overflow: hidden; /* For rounded corners */
+  max-height: 80vh; /* Max height for scrollable content */
+  overflow-y: auto; /* Enable vertical scroll */
+  opacity: 0; /* Start hidden for animation */
+  pointer-events: none; /* Disable interaction when hidden */
+  transition: opacity 0.3s ease, transform 0.3s ease; /* Smooth transition */
+}
+
+.contact-dropdown-content.show {
+  display: block; /* Show when 'show' class is present */
+  opacity: 1; /* Fade in */
+  pointer-events: auto; /* Enable interaction */
+  transform: translate(-50%, -50%) scale(1); /* Ensure scale is 1 */
+}
+
+body.dark .contact-dropdown-content {
+  background-color: #334155; /* Dark mode background */
+}
+
+.contact-dropdown-content a {
+  color: #374151; /* Light mode text color */
+  padding: 0.75rem 1.25rem;
+  text-decoration: none;
+  display: block;
+  font-weight: 500;
+  transition: background-color 0.2s ease, color 0.2s ease;
+}
+
+body.dark .contact-dropdown-content a {
+  color: #e2e8f0; /* Dark mode text color */
+}
+
+.contact-dropdown-content a:hover {
+  background-color: #e5e7eb; /* Light mode hover */
+  color: #1f2937;
+}
+
+body.dark .contact-dropdown-content a:hover {
+  background-color: #475569; /* Dark mode hover */
+  color: #e2e8f0;
+}
+/* --- END: PERBAIKAN DROPDOWN EMAIL --- */
+
+
+/* Date picker styling */
+input[type="date"] {
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  appearance: none;
+  background: white;
+  border: 1px solid #d1d5db;
+  padding: 0.75rem 1rem;
+  border-radius: 0.5rem;
+  width: 100%;
+  font-family: 'Poppins', sans-serif;
+  font-size: 1rem;
+  color: #1f2937;
+  cursor: pointer;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+input[type="date"]:focus {
+  outline: none;
+  border-color: #f97316;
+  box-shadow: 0 0 0 2px rgba(249, 115, 22, 0.2);
+}
+
+body.dark input[type="date"]:focus {
+  border-color: #f97316;
+  box-shadow: 0 0 0 2px rgba(249, 115, 22, 0.3);
+}
+
+/* Placeholder color for date input */
+input[type="date"]::-webkit-input-placeholder { color: #9ca3af; }
+input[type="date"]::-moz-placeholder { color: #9ca3af; }
+input[type="date"]:-ms-input-placeholder { color: #9ca3af; }
+input[type="date"]::placeholder { color: #9ca3af; }
+
+/* Date picker icon styling (optional, depends on browser) */
+input[type="date"]::-webkit-calendar-picker-indicator {
+  filter: invert(0.5); /* Adjust for dark mode */
+}
+
+body.dark input[type="date"]::-webkit-calendar-picker-indicator {
+  filter: invert(1); /* Make icon white in dark mode */
+}
+
+/* Login success animation */
+.login-success-badge {
+  position: fixed;
+  top: 180px; /* Below other badges */
+  left: 50%;
+  transform: translateX(-50%);
+  padding: 10px 20px;
+  border-radius: 999px;
+  background-color: #22c55e; /* Green for success */
+  color: white;
+  font-size: 14px;
+  font-weight: 600;
+  z-index: 1400;
+  opacity: 0;
+  pointer-events: none;
+  display: none;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+}
+
+
+
+/* === NAVBAR VISIBILITY RULES — canonical === */
+@media (min-width: 1024px) {
+  .header-nav-desktop { display: flex !important; }
+  .hamburger { display: none !important; }
+}
+@media (max-width: 1023px) {
+  .header-nav-desktop { display: none !important; }
+  .hamburger { display: flex !important; }
+}
+@media (max-width: 767px) {
+  .header-nav-desktop { display: none !important; }
+  .hamburger { display: flex !important; }
+}
+@media (max-width: 519px) {
+  .header-nav-desktop { display: none !important; }
+  .hamburger { display: flex !important; }
+}
+
+.product-actions {
+  display: flex;
+  gap: 0.5rem;
+  margin-top: auto;
+  transition: all 0.3s ease;
+  /* Order the buttons */
+  flex-direction: row; /* Ensure row direction */
+  justify-content: space-between; /* Space out the buttons */
+}
+.product-actions .btn-wishlist {
+  order: 1; /* Wishlist first */
+}
+.product-actions .btn-pesan {
+  order: 2; /* Pesan second */
+  flex-grow: 1; /* Allow pesan button to grow */
+}
+
+/* REVISI: Tombol pesan di bawah tombol wishlist untuk layar <= 1023px */
+@media (max-width: 1023px) {
+  .product-actions {
+    flex-direction: column; /* Stack buttons vertically */
+    align-items: stretch; /* Make buttons take full width */
+  }
+  .product-actions button {
+    width: 100%; /* Ensure buttons take full width */
+  }
+}
+
+@media (max-width: 519px) {
+  .product-actions {
+    flex-direction: column;
+    align-items: stretch;
+  }
+  .product-actions button {
+    width: 100%;
+  }
+}
+/* Tombol Back to Top */
+.back-to-top-btn {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  background: linear-gradient(135deg, #f97316, #ea580c); /* Orange gradient */
+  color: white;
+  border: none;
+  border-radius: 50%;
+  width: 50px;
+  height: 50px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.2rem;
+  box-shadow: 0 4px 15px rgba(249, 115, 22, 0.4);
+  cursor: pointer;
+  opacity: 0; /* Hidden by default */
+  visibility: hidden; /* Hidden by default */
+  transition: all 0.3s ease; /* Smooth transition for all properties */
+  z-index: 998; /* Di bawah overlay modal */
+}
+
+.back-to-top-btn:hover {
+  background: linear-gradient(135deg, #ea580c, #f97316); /* Reverse gradient on hover */
+  transform: translateY(-3px);
+  box-shadow: 0 6px 20px rgba(249, 115, 22, 0.5);
+}
+
+/* Dark mode for Back to Top button */
+body.dark .back-to-top-btn {
+  background: linear-gradient(135deg, #fb923c, #f97316); /* Darker orange gradient */
+  box-shadow: 0 4px 15px rgba(251, 146, 60, 0.4);
+}
+
+body.dark .back-to-top-btn:hover {
+  background: linear-gradient(135deg, #f97316, #fb923c);
+  box-shadow: 0 6px 20px rgba(251, 146, 60, 0.5);
+}
+
+/* State for showing the button */
+.back-to-top-btn.show {
+  opacity: 1;
+  visibility: visible;
+}
+
+/* Tambahkan di style.css */
+.cart-desktop {
+  position: relative;
+  transition: transform 0.3s ease;
+}
+
+.cart-desktop:hover {
+  transform: rotate(-15deg) scale(1.1);
+}
+
+#cart-count {
+  transition: all 0.3s cubic-bezier(0.68, -0.55, 0.27, 1.55);
+}
+
+.cart-bounce {
+  animation: cartBounce 0.5s ease;
+}
+
+@keyframes cartBounce {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-10px); }
+}
+
+/* New: Update Notification Modal Styles */
+#update-modal {
+  max-width: 500px; /* Larger modal for updates */
+  padding: 2rem;
+}
+
+#update-modal h3 {
+  font-size: 1.75rem;
+  font-weight: bold;
+  color: #f97316; /* Orange color for title */
+}
+
+#update-modal .update-item {
+  background-color: #f3f4f6;
+  padding: 1rem;
+  border-radius: 0.75rem;
+  margin-bottom: 0.75rem;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+}
+
+body.dark #update-modal .update-item {
+  background-color: #475569;
+}
+
+#update-modal .update-item h4 {
+  font-weight: 600;
+  color: #1f2937;
+  margin-bottom: 0.25rem;
+}
+
+body.dark #update-modal .update-item h4 {
+  color: #e2e8f0;
+}
+
+#update-modal .update-item p {
+  font-size: 0.9rem;
+  color: #4b5563;
+}
+
+body.dark #update-modal .update-item p {
+  color: #cbd5e1;
+}
+
+#update-modal .update-item .update-date {
+  font-size: 0.8rem;
+  color: #9ca3af;
+  margin-top: 0.5rem;
+  text-align: right;
+}
+
+body.dark #update-modal .update-item .update-date {
+  color: #94a3b8;
+}
+
+#update-modal #promo-content {
+  margin-top: 1.5rem;
+}
+
+#update-modal #close-update-modal {
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0;
+  font-size: 1.5rem;
+  color: #6b7280;
+  transition: color 0.2s ease;
+}
+
+#update-modal #close-update-modal:hover {
+  color: #1f2937;
+}
+
+body.dark #update-modal #close-update-modal:hover {
+  color: #e2e8f0;
+}
+
+/* Ensure update modal is hidden by default */
+#update-modal {
+  display: none;
+}
+
+/* Gaya untuk input promo code */
+.promo-input-container {
+  display: flex;
+  gap: 0.5rem;
+  margin-top: 1rem;
+  margin-bottom: 1rem;
+  align-items: center;
+}
+
+.promo-input-container input {
+  flex-grow: 1;
+  padding: 0.5rem 0.75rem;
+  border-radius: 0.5rem;
+  border: 1px solid #d1d5db;
+  background-color: white;
+  color: #1f2937;
+  transition: all 0.3s ease;
+}
+
+body.dark .promo-input-container input {
+  background-color: #1f2937;
+  border-color: #4b5563;
+  color: #e2e8f0;
+}
+
+.promo-input-container input::placeholder {
+  color: #9ca3af;
+}
+
+.promo-input-container button {
+  padding: 0.5rem 1rem;
+  border-radius: 0.5rem;
+  background-color: #f97316;
+  color: white;
+  font-weight: 600;
+  transition: background-color 0.3s ease;
+}
+
+.promo-input-container button:hover {
+  background-color: #ea580c;
+}
+
+/* Gaya untuk teks promo yang diterapkan */
+.promo-applied-text {
+  font-size: 0.875rem;
+  color: #22c55e; /* Green for success */
+  font-weight: 600;
+  margin-top: 0.5rem;
+  text-align: center;
+}
+
+body.dark .promo-applied-text {
+  color: #4ade80;
+}
+
+/* Kontras untuk checkbox label di update modal */
+#update-modal label {
+  color: #4b5563; /* Default light mode color */
+}
+
+body.dark #update-modal label {
+  color: #cbd5e1; /* Dark mode color */
+}
+
+/* Product Detail Modal Styles */
+#product-detail-modal {
+  max-width: 500px; /* Larger modal for updates */
+  padding: 1.5rem;
+}
+
+#product-detail-modal .product-detail-content {
+  margin-bottom: 1.5rem;
+}
+
+/* Swiper for Product Detail Images */
+.product-detail-swiper {
+  width: 100%;
+  height: 240px;
+  /* Sudut lebih lembut, tidak terlalu lancip */
+  border-radius: 1.25rem;
+  overflow: hidden;
+  position: relative;
+  background: #f3f4f6;
+}
+
+body.dark .product-detail-swiper {
+  background: #1f2937;
+}
+
+.product-detail-swiper .swiper-slide {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  /* Sudut lembut mengikuti kontainer */
+  border-radius: 1.25rem;
+  overflow: hidden;
+}
+
+.product-detail-swiper .swiper-slide img,
+.product-detail-main-img {
+  width: 100%;
+  height: 100%;
+  /* cover = isi penuh kontainer (vertikal + horizontal) */
+  object-fit: cover;
+  object-position: center;
+  cursor: pointer;
+  transition: transform 0.2s ease;
+  background: transparent;
+  /* Sudut gambar ikut membulat */
+  border-radius: 1.25rem;
+}
+
+.product-detail-swiper .swiper-slide img:hover {
+  transform: scale(1.02);
+}
+
+@media (min-width: 480px) {
+  .product-detail-swiper {
+    height: 280px;
+  }
+}
+
+/* Nav arrows product detail */
+.product-detail-swiper .swiper-button-prev,
+.product-detail-swiper .swiper-button-next {
+  color: #f97316;
+  width: 32px;
+  height: 32px;
+  background: rgba(255, 255, 255, 0.85);
+  border-radius: 50%;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+}
+
+.product-detail-swiper .swiper-button-prev:after,
+.product-detail-swiper .swiper-button-next:after {
+  font-size: 14px;
+  font-weight: bold;
+}
+
+body.dark .product-detail-swiper .swiper-button-prev,
+body.dark .product-detail-swiper .swiper-button-next {
+  background: rgba(30, 41, 59, 0.9);
+  color: #fb923c;
+}
+
+.product-detail-swiper .swiper-button-disabled {
+  opacity: 0.35;
+  cursor: not-allowed;
+}
+
+/* Custom Pagination for Product Detail Swiper (mini images) */
+.product-detail-pagination {
+  position: static !important;
+  margin-top: 0.75rem;
+  display: flex;
+  justify-content: center;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+
+.product-detail-pagination .swiper-pagination-bullet {
+  width: 52px;
+  height: 52px;
+  border-radius: 0.5rem;
+  background-color: #e5e7eb;
+  opacity: 1;
+  transition: all 0.25s ease;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 2px solid transparent;
+  margin: 0 !important;
+  cursor: pointer;
+}
+
+body.dark .product-detail-pagination .swiper-pagination-bullet {
+  background-color: #475569;
+}
+
+.product-detail-pagination .swiper-pagination-bullet img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: 0.35rem;
+  pointer-events: none;
+}
+
+.product-detail-pagination .swiper-pagination-bullet-active {
+  border-color: #f97316;
+  transform: scale(1.08);
+  box-shadow: 0 0 0 2px rgba(249, 115, 22, 0.25);
+}
+
+.product-img-enlarge-hint {
+  margin-top: 0.25rem;
+}
+
+/* Product Variants Styling */
+#product-variants-options label {
+  cursor: pointer;
+}
+
+#product-variants-options input[type="radio"] {
+  /* Custom radio button styling */
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  appearance: none;
+  width: 18px;
+  height: 18px;
+  border: 2px solid #d1d5db;
+  border-radius: 50%;
+  outline: none;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+body.dark #product-variants-options input[type="radio"] {
+  border-color: #64748b;
+}
+
+#product-variants-options input[type="radio"]:checked {
+  background-color: #f97316; /* Orange when checked */
+  border-color: #f97316;
+}
+
+#product-variants-options input[type="radio"]:checked::before {
+  content: '';
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background-color: white;
+  display: block;
+}
+
+/* Product Toppings Styling */
+#product-toppings-options label {
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem;
+  border-radius: 0.5rem;
+  background-color: #f3f4f6; /* Light mode background for topping item */
+  color: #1f2937; /* Light mode text color for topping */
+  transition: all 0.2s ease;
+}
+
+body.dark #product-toppings-options label {
+  background-color: #475569; /* Dark mode background for topping item */
+  color: #e2e8f0; /* Dark mode text color for topping */
+}
+
+#product-toppings-options label:hover {
+  background-color: #e5e7eb; /* Light mode hover */
+}
+
+body.dark #product-toppings-options label:hover {
+  background-color: #334155; /* Dark mode hover */
+}
+
+#product-toppings-options input[type="checkbox"] {
+  /* Custom checkbox styling */
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  appearance: none;
+  width: 18px;
+  height: 18px;
+  border: 2px solid #d1d5db;
+  border-radius: 4px;
+  outline: none;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+body.dark #product-toppings-options input[type="checkbox"] {
+  border-color: #64748b;
+}
+
+#product-toppings-options input[type="checkbox"]:checked {
+  background-color: #f97316; /* Orange when checked */
+  border-color: #f97316;
+}
+
+#product-toppings-options input[type="checkbox"]:checked::before {
+  content: '\f00c'; /* Font Awesome check icon */
+  font-family: 'Font Awesome 6 Free';
+  font-weight: 900;
+  font-size: 12px;
+  color: white;
+  display: block;
+}
+
+/* Related Products in Modal */
+/* Changed to use product-card style */
+#related-products-modal-list .product-card {
+  padding: 1rem; /* Adjust padding for smaller cards in modal */
+  min-height: unset; /* Remove min-height constraint */
+  background-color: #ffffff; /* Light mode background */
+  border: 1px solid #e5e7eb; /* Light border for contrast */
+  border-radius: 0.75rem; /* Rounded corners */
+  box-shadow: 0 1px 3px rgba(0,0,0,0.5); /* Soft shadow */
+}
+
+#related-products-modal-list .product-card img {
+  height: 80px; /* Adjust image height for smaller cards */
+}
+
+#related-products-modal-list .product-card h4 {
+  font-size: 0.9rem; /* Adjust font size for smaller cards */
+}
+
+#related-products-modal-list .product-card p {
+  font-size: 0.75rem; /* Adjust font size for smaller cards */
+}
+
+/* Ensure related products section on main page is hidden by default */
+#related-products-section {
+  display: none;
+}
+
+/* Perbaikan warna teks di modal produk untuk light/dark mode */
+#product-detail-modal #product-detail-description {
+  color: #4b5563; /* Default light mode color */
+}
+
+body.dark #product-detail-modal #product-detail-description {
+  color: #cbd5e1; /* Dark mode color */
+}
+
+#product-detail-modal #product-detail-price {
+  color: #1f2937; /* Default light mode color */
+}
+
+body.dark #product-detail-modal #product-detail-price {
+  color: #e2e8f0; /* Dark mode color */
+}
+
+#product-detail-modal #product-variants-container h4,
+#product-detail-modal #product-toppings-container h4 {
+  color: #1f2937; /* Default light mode color */
+}
+
+body.dark #product-detail-modal #product-variants-container h4,
+body.dark #product-detail-modal #product-toppings-container h4 {
+  color: #e2e8f0; /* Dark mode color */
+}
+
+#product-detail-modal #product-variants-options span {
+  color: #1f2937; /* Default light mode color */
+}
+
+body.dark #product-detail-modal #product-variants-options span {
+  color: #e2e8f0; /* Dark mode color */
+}
+
+/* Promo Price Display colors */
+#promo-price-display .promo-original-price {
+  color: #ef4444; /* Red for original price */
+  text-decoration: line-through;
+}
+
+body.dark #promo-price-display .promo-original-price {
+  color: #f87171; /* Lighter red for dark mode */
+}
+
+#promo-price-display .promo-discounted-price {
+  color: #22c55e; /* Green for discounted price */
+}
+
+body.dark #promo-price-display .promo-discounted-price {
+  color: #4ade80;
+}
+
+/* Custom Scrollbar Styles for Modals */
+.modal::-webkit-scrollbar {
+  width: 10px;
+  border-radius: 5px; /* Rounded corners for the scrollbar track */
+}
+
+.modal::-webkit-scrollbar-track {
+  background: rgba(0, 0, 0, 0.1); /* Light transparent track for light mode */
+  border-radius: 5px;
+}
+
+.modal::-webkit-scrollbar-thumb {
+  background: rgba(0, 0, 0, 0.3); /* Darker transparent thumb for light mode */
+  border-radius: 5px;
+}
+
+.modal::-webkit-scrollbar-thumb:hover {
+  background: rgba(0, 0, 0, 0.5);
+}
+
+body.dark .modal::-webkit-scrollbar-track {
+  background: rgba(255, 255, 255, 0.1); /* Dark transparent track for dark mode */
+}
+
+body.dark .modal::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.3); /* Lighter transparent thumb for dark mode */
+}
+
+body.dark .modal::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 255, 255, 0.5);
+}
+
+/* Product Detail Swiper Pagination Text */
+.product-detail-pagination .swiper-pagination-bullet span {
+  color: #1f2937; /* Default light mode text color */
+  font-size: 0.75rem;
+  font-weight: 500;
+}
+
+body.dark .product-detail-pagination .swiper-pagination-bullet span {
+  color: #e2e8f0; /* Dark mode text color */
+}
+
+.product-detail-pagination .swiper-pagination-bullet-active span {
+  color: #f97316; /* Orange for active text */
+}
+
+/* Ensure text in promo content is readable */
+#promo-content p {
+  color: inherit; /* Inherit color from parent to ensure dark mode text is visible */
+}
+
+/* Ensure text in info-item is readable */
+.info-item .info-left,
+.info-item .info-right {
+  color: inherit; /* Inherit color from parent to ensure dark mode text is visible */
+}
+
+/* Petunjuk di modal info pembayaran — kontras jelas di light & dark mode */
+#info-modal .info-hint {
+  color: #374151 !important; /* gray-700 — mudah dibaca di light mode */
+}
+body.dark #info-modal .info-hint {
+  color: #d1d5db !important; /* gray-300 — mudah dibaca di dark mode */
+}
+
+/* Ensure text in order event modal labels is readable */
+#order-event-modal label,
+#report-bug-modal label {
+  color: #374151; /* Default light mode color */
+}
+
+body.dark #order-event-modal label,
+body.dark #report-bug-modal label {
+  color: #e2e8f0; /* Dark mode color */
+}
+
+/* Ensure input fields have good contrast */
+#order-event-modal input,
+#order-event-modal textarea,
+#report-bug-modal input,
+#report-bug-modal textarea,
+#info-modal #checkout-name,
+#info-modal #checkout-address {
+  background-color: white;
+  color: #1f2937;
+  border-color: #d1d5db;
+}
+
+body.dark #order-event-modal input,
+body.dark #order-event-modal textarea,
+body.dark #report-bug-modal input,
+body.dark #report-bug-modal textarea,
+body.dark #info-modal #checkout-name,
+body.dark #info-modal #checkout-address {
+  background-color: #1f2937;
+  color: #e2e8f0;
+  border-color: #4b5563;
+}
+
+/* Placeholder color for inputs in modals */
+#order-event-modal input::placeholder,
+#order-event-modal textarea::placeholder,
+#report-bug-modal input::placeholder,
+#report-bug-modal textarea::placeholder,
+#info-modal #checkout-name::placeholder,
+#info-modal #checkout-address::placeholder {
+  color: #9ca3af;
+}
+
+body.dark #order-event-modal input::placeholder,
+body.dark #order-event-modal textarea::placeholder,
+body.dark #report-bug-modal input::placeholder,
+body.dark #report-bug-modal textarea::placeholder,
+body.dark #info-modal #checkout-name::placeholder,
+body.dark #info-modal #checkout-address::placeholder {
+  color: #6b7280;
+}
+
+/* Label form pengantaran di info modal */
+#info-modal #delivery-form label {
+  color: #374151;
+}
+body.dark #info-modal #delivery-form label {
+  color: #e2e8f0;
+}
+body.dark #info-modal #delivery-form p {
+  color: #e2e8f0;
+}
+
+/* Ensure text in confirm delete modal is readable */
+#confirm-delete-modal p {
+  color: #4b5563; /* Default light mode color */
+}
+
+body.dark #confirm-delete-modal p {
+  color: #cbd5e1; /* Dark mode color */
+}
+
+/* Ensure text in wishlist modal is readable */
+#wishlist-modal .bg-gray-50 p {
+  color: #374151; /* Default light mode color */
+}
+
+body.dark #wishlist-modal .bg-gray-50 p {
+  color: #e2e8f0; /* Dark mode color */
+}
+
+#wishlist-modal .bg-gray-50 .text-gray-500 {
+  color: #6b7280; /* Default light mode color */
+}
+
+body.dark #wishlist-modal .bg-gray-50 .text-gray-500 {
+  color: #94a3b8; /* Dark mode color */
+}
+
+/* Ensure text in cart modal is readable */
+#cart-modal .bg-gray-50 p {
+  color: #374151; /* Default light mode color */
+}
+
+body.dark #cart-modal .bg-gray-50 p {
+  color: #e2e8f0; /* Dark mode color */
+}
+
+#cart-modal .bg-gray-50 .text-gray-500 {
+  color: #6b7280; /* Default light mode color */
+}
+
+body.dark #cart-modal .bg-gray-50 .text-gray-500 {
+  color: #94a3b8; /* Dark mode color */
+}
+
+/* Ensure edit cart modal text is readable */
+#edit-cart-modal p {
+  color: #374151; /* Default light mode color */
+}
+
+body.dark #edit-cart-modal p {
+  color: #e2e8f0; /* Dark mode color */
+}
+
+#edit-cart-modal .text-gray-500 {
+  color: #6b7280; /* Default light mode color */
+}
+
+body.dark #edit-cart-modal .text-gray-500 {
+  color: #94a3b8; /* Dark mode color */
+}
+
+/* Ensure search modal text is readable */
+#search-modal input {
+  color: #1f2937; /* Default light mode color */
+  background-color: white;
+  border-color: #d1d5db;
+}
+
+body.dark #search-modal input {
+  color: #e2e8f0; /* Dark mode color */
+  background-color: #1f2937;
+  border-color: #4b5563;
+}
+
+/* New: Modal Close Button (X) */
+.modal-close-btn {
+  position: absolute;
+  top: 1rem;
+  right: 1rem;
+  background: none;
+  border: none;
+  font-size: 1.5rem;
+  color: #6b7280; /* Default color for light mode */
+  cursor: pointer;
+  transition: color 0.2s ease, transform 0.2s ease;
+  z-index: 10; /* Ensure it's above other modal content */
+}
+
+.modal-close-btn:hover {
+  color: #1f2937; /* Darker on hover for light mode */
+  transform: rotate(90deg);
+}
+
+body.dark .modal-close-btn {
+  color: #9ca3af; /* Default color for dark mode */
+}
+
+body.dark .modal-close-btn:hover {
+  color: #e2e8f0; /* Lighter on hover for dark mode */
+}
+
+/* New: Modal Back Button */
+.modal-back-btn {
+  background: #e5e7eb; /* Light gray for light mode */
+  color: #374151; /* Dark text for light mode */
+  padding: 0.75rem 1.25rem;
+  border-radius: 0.75rem;
+  font-weight: 600;
+  transition: all 0.3s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  width: fit-content; /* Adjust width to content */
+  margin-left: auto; /* Push to right */
+}
+
+.modal-back-btn:hover {
+  background: #d1d5db; /* Darker gray on hover for light mode */
+  transform: translateY(-1px);
+}
+
+body.dark .modal-back-btn {
+  background: #475569; /* Darker gray for dark mode */
+  color: #e2e8f0; /* Light text for dark mode */
+}
+
+body.dark .modal-back-btn:hover {
+  background: #334155; /* Even darker gray on hover for dark mode */
+}
+
+/* Responsive adjustments for buttons */
+@media (max-width: 640px) {
+  .modal-back-btn {
+    width: 100%; /* Full width on small screens */
+    margin-left: 0;
+  }
+}
+
+/* Responsive promo input container */
+@media (max-width: 768px) {
+  .promo-input-container {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .promo-input-container input {
+    width: 100%;
+    margin-bottom: 0.5rem; /* Space between input and button */
+  }
+
+  .promo-input-container button {
+    width: 100%;
+  }
+}
+
+/* --- START: REVISI UNTUK TOMBOL HAPUS SEMUA DI MODAL KERANJANG --- */
+/* Container untuk judul dan tombol hapus semua */
+#cart-modal .modal-header-cart {
+  display: flex;
+  flex-direction: column; /* Stack items vertically */
+  align-items: center; /* Center horizontally */
+  margin-bottom: 1rem; /* Space below header */
+  position: relative; /* For positioning the close button */
+}
+
+#cart-modal .modal-header-cart h3 {
+  margin-bottom: 0.5rem; /* Space between title and clear button */
+  text-align: center;
+  font-size: large; /* Center the title */
+}
+
+#cart-modal .clear-cart-btn {
+  /* Existing styles for clear-cart-btn */
+  background: none;
+  border: none;
+  color: #ef4444; /* Red color for delete icon */
+  font-size: 0.9rem; /* Adjust font size if needed */
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+  cursor: pointer;
+  transition: color 0.2s ease;
+  padding: 0.25rem 0.5rem; /* Add some padding */
+  border-radius: 0.375rem; /* Slightly rounded corners */
+}
+
+#cart-modal .clear-cart-btn:hover {
+  color: #dc2626; /* Darker red on hover */
+  background-color: rgba(239, 68, 68, 0.1); /* Light red background on hover */
+}
+
+body.dark #cart-modal .clear-cart-btn {
+  color: #f87171; /* Lighter red for dark mode */
+}
+
+body.dark #cart-modal .clear-cart-btn:hover {
+  color: #ef4444; /* Darker red on hover in dark mode */
+  background-color: rgba(248, 113, 113, 0.1); /* Light red background on hover in dark mode */
+}
+
+/* Pastikan tombol close (X) tetap di kanan atas */
+#cart-modal .modal-close-btn {
+  position: absolute;
+  top: 0.5rem; /* Adjust as needed */
+  right: 0.5rem; /* Adjust as needed */
+  z-index: 11; /* Ensure it's above the header content */
+}
+/* --- END: REVISI UNTUK TOMBOL HAPUS SEMUA DI MODAL KERANJANG --- */
+
+/* New: Product Info Details (Rating & Sales) */
+.product-info-details {
+  display: flex;
+  justify-content: flex-end; /* Align to end (right) */
+  align-items: center;
+  margin-bottom: 0.75rem; /* Space between info and buttons */
+  font-size: 0.875rem; /* Small font size for info */
+}
+
+/* Removed .product-rating styles */
+
+.product-sales {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+  color: #ef4444; /* Red for sales icon */
+  font-weight: 600;
+}
+
+.product-sales .sales-icon {
+  font-size: 0.9rem; /* Adjust sales icon size */
+}
+
+/* Dark mode adjustments for rating and sales */
+body.dark .product-sales {
+  color: #f87171; /* Lighter red for dark mode */
+}
+
+/* Responsive adjustments for product info details */
+@media (max-width: 768px) {
+  .product-info-details {
+    flex-direction: row; /* Keep as row */
+    justify-content: flex-end; /* Keep aligned to right */
+    align-items: center;
+    gap: 0.25rem;
+  }
+}
+
+@media (max-width: 520px) {
+  .product-info-details {
+    flex-direction: row; /* Keep as row */
+    justify-content: flex-end; /* Keep aligned to right */
+    align-items: center;
+    font-size: 0.75rem;
+  }
+  .product-sales .sales-icon {
+    font-size: 0.7rem; /* Even smaller on mobile */
+  }
+}
+
+/* New: Product Rating Styles */
+.product-rating {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+  color: #f97316; /* Yellow for stars */
+  font-weight: 600;
+  margin-right: auto; /* Push to the left */
+  opacity: 1; /* Always visible */
+  transform: translateX(0); /* Always in position */
+  transition: opacity 0.3s ease, transform 0.3s ease;
+}
+
+/* Container for the 5 empty stars */
+.stars-outer {
+  position: relative;
+  display: inline-block;
+  font-family: 'Font Awesome 6 Free'; /* Use Font Awesome */
+  font-weight: 900; /* For solid stars */
+  font-size: 1rem; /* Base size for stars */
+  line-height: 1; /* Prevent extra space */
+  white-space: nowrap; /* Keep stars on one line */
+}
+
+.stars-outer::before {
+  content: '\f005 \f005 \f005 \f005 \f005'; /* 5 empty stars */
+  color: #d1d5db; /* Light gray for empty stars */
+}
+
+/* Filled stars container */
+.stars-inner {
+  position: absolute;
+  top: 0;
+  left: 0;
+  white-space: nowrap;
+  overflow: hidden;
+  width: 0%; /* Controlled by JS */
+}
+
+.stars-inner::before {
+  content: '\f005 \f005 \f005 \f005 \f005'; /* 5 filled stars */
+  color: #f97316; /* Yellow for filled stars */
+}
+
+/* Responsive star sizing */
+@media (max-width: 768px) {
+  .stars-outer {
+    font-size: 0.9rem;
+  }
+}
+
+@media (max-width: 520px) {
+  .stars-outer {
+    font-size: 0.8rem;
+  }
+}
+
+/* Removed: Show rating on product card hover */
+/* .product-card:hover .product-rating {
+  opacity: 1;
+  transform: translateX(0);
+} */
+
+/* Dark mode adjustments for rating */
+body.dark .product-rating {
+  color: #fde047; /* Lighter yellow for dark mode */
+}
+
+body.dark .stars-outer::before {
+  color: #6b7280; /* Darker gray for empty stars in dark mode */
+}
+
+body.dark .stars-inner::before {
+  color: #fde047; /* Lighter yellow for filled stars in dark mode */
+}
+
+/* QR Code Enlarge Feature */
+#dana-qr-code.qr-enlargeable {
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  border: 2px solid transparent;
+}
+
+#dana-qr-code.qr-enlargeable:hover {
+  transform: scale(1.03);
+  box-shadow: 0 4px 20px rgba(0,0,0,0.15);
+  border-color: #f97316;
+}
+
+.qr-enlarge-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.92);
+  z-index: 2000;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 1.5rem;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.25s ease;
+}
+
+.qr-enlarge-overlay.show {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.qr-enlarge-overlay.hidden {
+  display: none !important;
+}
+
+.qr-enlarge-img {
+  max-width: min(90vw, 420px);
+  max-height: min(75vh, 420px);
+  width: auto;
+  height: auto;
+  object-fit: contain;
+  border-radius: 1rem;
+  background: white;
+  padding: 0.75rem;
+  box-shadow: 0 10px 40px rgba(0,0,0,0.5);
+}
+
+.qr-enlarge-close {
+  position: absolute;
+  top: 1.25rem;
+  right: 1.25rem;
+  background: rgba(255,255,255,0.15);
+  border: none;
+  color: white;
+  font-size: 2rem;
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.2s ease, transform 0.2s ease;
+  line-height: 1;
+  z-index: 2001;
+}
+
+.qr-enlarge-close:hover {
+  background: rgba(255,255,255,0.3);
+  transform: scale(1.1);
+}
+
+.qr-enlarge-hint {
+  color: rgba(255,255,255,0.75);
+  font-size: 0.85rem;
+  margin-top: 1.25rem;
+  text-align: center;
+}
+
+body.dark .qr-enlarge-img {
+  background: #1f2937;
+}
